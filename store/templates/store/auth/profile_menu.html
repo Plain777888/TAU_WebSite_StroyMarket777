@@ -1,0 +1,33 @@
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="text-center mb-4">
+            {% if user.userprofile.avatar %}
+            <img src="{{ user.userprofile.avatar.url }}" alt="Аватар" class="rounded-circle mb-3" width="80" height="80">
+            {% else %}
+            <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-person fs-4 text-muted"></i>
+            </div>
+            {% endif %}
+            <h6>{{ user.get_full_name|default:user.username }}</h6>
+            <p class="text-muted small">{{ user.email }}</p>
+        </div>
+
+        <div class="list-group list-group-flush">
+            <a href="{% url 'store:profile' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                <i class="bi bi-person"></i> Обзор
+            </a>
+            <a href="{% url 'store:edit_profile' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+                <i class="bi bi-pencil"></i> Редактировать профиль
+            </a>
+            <a href="{% url 'store:order_history' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">
+                <i class="bi bi-receipt"></i> История заказов
+            </a>
+            <a href="{% url 'store:change_password' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
+                <i class="bi bi-key"></i> Сменить пароль
+            </a>
+            <a href="{% url 'store:logout' %}" class="list-group-item list-group-item-action text-danger">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,128 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Заказ #{{ order.id }} - Строительный магазин{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            {% include 'store/auth/profile_menu.html' %}
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-receipt"></i> Заказ #{{ order.id }}</h5>
+                    <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Информация о заказе</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Номер заказа:</th>
+                                    <td>#{{ order.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Дата создания:</th>
+                                    <td>{{ order.created|date:"d.m.Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Дата обновления:</th>
+                                    <td>{{ order.updated|date:"d.m.Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Статус:</th>
+                                    <td>{{ order.get_status_display }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Информация о доставке</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Получатель:</th>
+                                    <td>{{ order.first_name }} {{ order.last_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ order.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Телефон:</th>
+                                    <td>{{ order.phone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Адрес:</th>
+                                    <td>{{ order.address|linebreaksbr }}</td>
+                                </tr>
+                                {% if order.note %}
+                                <tr>
+                                    <th>Примечание:</th>
+                                    <td>{{ order.note }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-cart"></i> Состав заказа</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Товар</th>
+                                    <th>Цена</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">{{ item.product.name }}</h6>
+                                                <small class="text-muted">{{ item.product.get_unit_display }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.price }} ₽</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.get_cost }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Итого:</strong></td>
+                                    <td><strong>{{ order.get_total_cost }} ₽</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'store:order_history' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Вернуться к истории заказов
+                        </a>
+                        <button class="btn btn-primary" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Распечатать заказ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

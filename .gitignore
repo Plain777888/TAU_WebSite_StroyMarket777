@@ -1,0 +1,53 @@
+# Django
+*.pyc
+*__pycache__/
+db.sqlite3
+db.sqlite3-journal
+migrations/
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Media files
+/media/
+!media/.gitkeep
+
+# Static files (в production они собираются через collectstatic)
+/staticfiles/
+
+# Logs
+*.log
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Production
+*.pid
+*.socket
+
+# Temp files
+*.tmp
+*.temp
+
+# Django secret key
+secret_key.txt
