@@ -22,3 +22,34 @@ def check_data(request):
     output += "</ul>"
 
     return HttpResponse(output)
+
+
+# views.py - добавьте эту функцию
+from django.http import HttpResponse
+from django.contrib.auth import get_user_model
+import json
+
+
+def reset_admin_password(request):
+    """ВРЕМЕННАЯ функция для сброса пароля админа"""
+    # Простая защита - проверка секретного ключа
+    secret_key = request.GET.get('key', '')
+    if secret_key != 'dlskfkdsfm31293i02409DSKJFDN!':  # ⚠️ ЗАМЕНИТЕ
+        return HttpResponse('Неверный ключ', status=403)
+
+    User = get_user_model()
+    try:
+        user = User.objects.get(username='admin')
+        new_password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!'  # ⚠️ ЗАМЕНИТЕ
+        user.set_password(new_password)
+        user.save()
+
+        return HttpResponse(json.dumps({
+            'success': True,
+            'message': f'Пароль сброшен. Новый: {new_password}'
+        }))
+    except User.DoesNotExist:
+        return HttpResponse(json.dumps({
+            'success': False,
+            'message': 'Пользователь admin не найден'
+        }))
