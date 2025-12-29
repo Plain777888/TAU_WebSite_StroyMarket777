@@ -3,17 +3,40 @@
 
 set -o errexit
 
-# Устанавливаем зависимости
+echo "=== 1. Установка зависимостей ==="
 pip install -r requirements.txt
 
-# Применяем миграции базы данных
-python manage.py makemigrations --noinput
+echo "=== 2. Показываю список миграций ==="
+python manage.py showmigrations
+
+echo "=== 3. Применяем миграции базы данных ==="
 python manage.py migrate --noinput
 
-python manage.py create_superuser_if_none_exists \
-  --username=admin \
-  --email=admin@example.com \
-  --password=123123
+echo "=== 4. Создаём суперпользователя (если нет) ==="
+python manage.py shell << EOF
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
-# Собираем статические файлы
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'ваш_надёжный_пароль')
+    print('Суперпользователь создан')
+else:
+    print('Суперпользователь уже существует')
+EOF
+
+echo "=== 5. Создаём тестовые категории (если нет) ==="
+python manage.py shell << EOF
+from store.models import Category
+
+if Category.objects.count() == 0:
+    Category.objects.create(name='Инструменты', slug='tools')
+    Category.objects.create(name='Материалы', slug='materials')
+    print('Тестовые категории созданы')
+else:
+    print('Категории уже существуют')
+EOF
+
+echo "=== 6. Собираем статические файлы ==="
 python manage.py collectstatic --noinput
+
+echo "=== Сборка успешно завершена ==="
