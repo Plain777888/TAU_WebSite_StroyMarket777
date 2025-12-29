@@ -152,28 +152,38 @@ CART_SESSION_ID = 'cart'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Добавьте этот код в конец settings.py или в файл, который импортируется при запуске
 import os
-from django.core.management import execute_from_command_line
+import sys
 
-# Проверяем, что мы в среде выполнения (не во время сборки)
-if os.environ.get('RUN_MAIN') or not os.environ.get('WERKZEUG_RUN_MAIN'):
+# Проверяем, что это не команда управления Django (migrate, collectstatic и т.д.)
+# и не выполнение тестов
+if ('RUN_MAIN' in os.environ or not 'WERKZEUG_RUN_MAIN' in os.environ) and 'test' not in sys.argv:
     try:
         from django.contrib.auth import get_user_model
+        from django.db import IntegrityError
 
         User = get_user_model()
 
-        # Параметры суперпользователя (ИЗМЕНИТЕ ПАРОЛЬ!)
+        # Параметры суперпользователя
         username = 'admin'
         email = 'admin@example.com'
-        password = 'dlfsmlkdmalmdKFSLSL123456!klsmfkmdaasft'  # ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ НА СВОЙ
+        password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!'  # ⚠️ ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ!
 
-        # Создаём, если не существует
+        # Пытаемся создать только если не существует
         if not User.objects.filter(username=username).exists():
             print('🔄 Создание суперпользователя...')
-            User.objects.create_superuser(username=username, email=email, password=password)
-            print('✅ Суперпользователь создан!')
+            try:
+                User.objects.create_superuser(username=username, email=email, password=password)
+                print(f'✅ Суперпользователь "{username}" создан!')
+            except IntegrityError:
+                print(f'ℹ️ Пользователь "{username}" уже существует (IntegrityError)')
         else:
-            print('ℹ️ Суперпользователь уже существует.')
+            print(f'ℹ️ Суперпользователь "{username}" уже существует.')
 
     except Exception as e:
-        print(f'⚠️ Не удалось создать суперпользователя: {e}')
+        # Игнорируем ошибки, связанные с недоступностью базы данных при старте
+        if 'database' in str(e).lower() or 'connection' in str(e).lower():
+            print('⚠️ База данных временно недоступна, пропускаем создание пользователя')
+        else:
+            print(f'⚠️ Ошибка при проверке/создании суперпользователя: {e}')
