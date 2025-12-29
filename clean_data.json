@@ -1,0 +1,968 @@
+[
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 3,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 3,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 3,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 3,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 2,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 2,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 2,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 2,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add user",
+    "content_type": 4,
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change user",
+    "content_type": 4,
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": 4,
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view user",
+    "content_type": 4,
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 5,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 5,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 5,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 5,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 6,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 6,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 6,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 6,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add Категория",
+    "content_type": 8,
+    "codename": "add_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change Категория",
+    "content_type": 8,
+    "codename": "change_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete Категория",
+    "content_type": 8,
+    "codename": "delete_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view Категория",
+    "content_type": 8,
+    "codename": "view_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add Товар",
+    "content_type": 11,
+    "codename": "add_product"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change Товар",
+    "content_type": 11,
+    "codename": "change_product"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete Товар",
+    "content_type": 11,
+    "codename": "delete_product"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view Товар",
+    "content_type": 11,
+    "codename": "view_product"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add Изображение товара",
+    "content_type": 12,
+    "codename": "add_productimage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change Изображение товара",
+    "content_type": 12,
+    "codename": "change_productimage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete Изображение товара",
+    "content_type": 12,
+    "codename": "delete_productimage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view Изображение товара",
+    "content_type": 12,
+    "codename": "view_productimage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add Корзина",
+    "content_type": 7,
+    "codename": "add_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change Корзина",
+    "content_type": 7,
+    "codename": "change_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete Корзина",
+    "content_type": 7,
+    "codename": "delete_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view Корзина",
+    "content_type": 7,
+    "codename": "view_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add Заказ",
+    "content_type": 9,
+    "codename": "add_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change Заказ",
+    "content_type": 9,
+    "codename": "change_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete Заказ",
+    "content_type": 9,
+    "codename": "delete_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view Заказ",
+    "content_type": 9,
+    "codename": "view_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add Элемент заказа",
+    "content_type": 10,
+    "codename": "add_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change Элемент заказа",
+    "content_type": 10,
+    "codename": "change_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete Элемент заказа",
+    "content_type": 10,
+    "codename": "delete_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view Элемент заказа",
+    "content_type": 10,
+    "codename": "view_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add Профиль пользователя",
+    "content_type": 13,
+    "codename": "add_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change Профиль пользователя",
+    "content_type": 13,
+    "codename": "change_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete Профиль пользователя",
+    "content_type": 13,
+    "codename": "delete_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view Профиль пользователя",
+    "content_type": 13,
+    "codename": "view_userprofile"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7s97xD9RRBnLLVYUVJjeDm$EmxpLszD+i26FHtf5S1d8rkWE16+vNtK3HBDPXz4V5I=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "y",
+    "first_name": "",
+    "last_name": "",
+    "email": "artur@mail.ru",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-29T15:23:12.747Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$zbcBgTKBgHYKlrkSfZQrPK$TCpYqUCMp0kwp/f1GtjTQhSw1wP3kNoYbT6UGLCIQcw=",
+    "last_login": "2025-12-29T15:28:21.853Z",
+    "is_superuser": true,
+    "username": "time",
+    "first_name": "",
+    "last_name": "",
+    "email": "a@mail.ru",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-29T15:27:11.095Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "store",
+    "model": "cart"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "store",
+    "model": "category"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "store",
+    "model": "order"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "store",
+    "model": "orderitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "store",
+    "model": "product"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "store",
+    "model": "productimage"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "store",
+    "model": "userprofile"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "yh35sbiqxmrmq3srki6iscmb6y6fa44r",
+  "fields": {
+    "session_data": ".eJxVjDsOwyAQRO9CHaEFjDEp0_sMaJdPcBKBZOwqyt1jJBdJOfPezJs53Lfs9hZXtwR2ZZJdfjtC_4ylg_DAcq_c17KtC_Gu8JM2PtcQX7fT_TvI2PKxHoxHQG81DEYpo60kPdokE0hMQgJFUGKEQGTIp0NJ5ElRj5OYrGCfL9RDN-k:1vaFAT:uvLqs0w-d6Vk91LimocGP8sonK1u1p2LJYunvzf26Zo",
+    "expire_date": "2026-01-12T15:28:21.885Z"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 1,
+  "fields": {
+    "name": "Инструменты",
+    "slug": "tools",
+    "description": "Ручные и электрические инструменты для строительства и ремонта",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 2,
+  "fields": {
+    "name": "Крепеж",
+    "slug": "fasteners",
+    "description": "Болты, гайки, шурупы, дюбели и другой крепежный материал",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 3,
+  "fields": {
+    "name": "Электроинструмент",
+    "slug": "power-tools",
+    "description": "Электрические инструменты для профессионального и домашнего использования",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 4,
+  "fields": {
+    "name": "Электрика",
+    "slug": "electrical",
+    "description": "Провода, розетки, выключатели, автоматы и другая электрофурнитура",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 5,
+  "fields": {
+    "name": "Сантехника",
+    "slug": "plumbing",
+    "description": "Трубы, фитинги, смесители, раковины и другое сантехническое оборудование",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 6,
+  "fields": {
+    "name": "Отделочные материалы",
+    "slug": "finishing",
+    "description": "Шпаклевка, краска, обои, плитка и другие отделочные материалы",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 7,
+  "fields": {
+    "name": "Лакокрасочные материалы",
+    "slug": "paint",
+    "description": "Краски, лаки, эмали, грунтовки и растворители",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 8,
+  "fields": {
+    "name": "Строительные смеси",
+    "slug": "building-mixes",
+    "description": "Цемент, штукатурка, шпаклевка, клеевые смеси",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 9,
+  "fields": {
+    "name": "Измерительные инструменты",
+    "slug": "measuring-tools",
+    "description": "Рулетки, уровни, угольники, лазерные нивелиры",
+    "image": ""
+  }
+},
+{
+  "model": "store.category",
+  "pk": 10,
+  "fields": {
+    "name": "Средства защиты",
+    "slug": "protection",
+    "description": "Перчатки, очки, респираторы, каски и другая защитная экипировка",
+    "image": ""
+  }
+},
+{
+  "model": "store.product",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "name": "Молоток слесарный 500г",
+    "slug": "hammer-500g",
+    "brand": "ЗУБР",
+    "description": "Молоток слесарный с деревянной рукояткой. Вес бойка: 500г. Идеально подходит для домашнего использования.",
+    "price": "899.99",
+    "unit": "шт",
+    "stock": 45,
+    "available": true,
+    "created": "2025-12-29T15:27:14.176Z",
+    "updated": "2025-12-29T15:27:14.176Z",
+    "image": "",
+    "weight": "0.700",
+    "dimensions": "",
+    "color": "Стальной",
+    "material": "Сталь, дерево"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "name": "Набор отверток 6 предметов",
+    "slug": "screwdriver-set-6",
+    "brand": "STAYER",
+    "description": "Набор отверток с различными насадками: плоские и крестовые. Рукоятки с противоскользящим покрытием.",
+    "price": "1299.50",
+    "unit": "набор",
+    "stock": 32,
+    "available": true,
+    "created": "2025-12-29T15:27:14.195Z",
+    "updated": "2025-12-29T15:27:14.195Z",
+    "image": "",
+    "weight": "0.450",
+    "dimensions": "",
+    "color": "Разноцветный",
+    "material": "Сталь, пластик"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 3,
+  "fields": {
+    "category": 1,
+    "name": "Плоскогубцы 180мм",
+    "slug": "pliers-180mm",
+    "brand": "ЗУБР",
+    "description": "Плоскогубцы комбинированные с изолированными рукоятками. Длина: 180мм.",
+    "price": "649.99",
+    "unit": "шт",
+    "stock": 28,
+    "available": true,
+    "created": "2025-12-29T15:27:14.213Z",
+    "updated": "2025-12-29T15:27:14.213Z",
+    "image": "",
+    "weight": "0.320",
+    "dimensions": "",
+    "color": "Хромированный",
+    "material": "Хромованадиевая сталь"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 4,
+  "fields": {
+    "category": 2,
+    "name": "Саморезы по дереву 4.2x70мм",
+    "slug": "wood-screws-4-2x70",
+    "brand": "KREP",
+    "description": "Саморезы по дереву, оцинкованные. Упаковка 200шт. Идеальны для деревянных конструкций.",
+    "price": "249.99",
+    "unit": "уп",
+    "stock": 120,
+    "available": true,
+    "created": "2025-12-29T15:27:14.229Z",
+    "updated": "2025-12-29T15:27:14.229Z",
+    "image": "",
+    "weight": "0.850",
+    "dimensions": "4.2x70мм",
+    "color": "",
+    "material": "Оцинкованная сталь"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 5,
+  "fields": {
+    "category": 2,
+    "name": "Дюбель-гвоздь 6x40мм",
+    "slug": "dowel-nail-6x40",
+    "brand": "KREP",
+    "description": "Дюбель-гвоздь для быстрого монтажа. Упаковка 100шт. Подходит для бетона и кирпича.",
+    "price": "189.99",
+    "unit": "уп",
+    "stock": 95,
+    "available": true,
+    "created": "2025-12-29T15:27:14.247Z",
+    "updated": "2025-12-29T15:27:14.247Z",
+    "image": "",
+    "weight": "0.350",
+    "dimensions": "6x40мм",
+    "color": "",
+    "material": "Пластик, сталь"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 6,
+  "fields": {
+    "category": 2,
+    "name": "Анкерный болт М10х100",
+    "slug": "anchor-bolt-m10x100",
+    "brand": "FISCHER",
+    "description": "Анкерный болт для надежного крепления в бетоне. Высокая несущая способность.",
+    "price": "89.99",
+    "unit": "шт",
+    "stock": 150,
+    "available": true,
+    "created": "2025-12-29T15:27:14.262Z",
+    "updated": "2025-12-29T15:27:14.262Z",
+    "image": "",
+    "weight": "0.120",
+    "dimensions": "М10х100мм",
+    "color": "",
+    "material": "Оцинкованная сталь"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 7,
+  "fields": {
+    "category": 3,
+    "name": "Дрель-шуруповерт 18В",
+    "slug": "drill-driver-18v",
+    "brand": "BOSCH",
+    "description": "Беспроводной дрель-шуруповерт с двумя аккумуляторами. Крутящий момент: 50Нм.",
+    "price": "5499.99",
+    "unit": "шт",
+    "stock": 15,
+    "available": true,
+    "created": "2025-12-29T15:27:14.281Z",
+    "updated": "2025-12-29T15:27:14.281Z",
+    "image": "",
+    "weight": "1.400",
+    "dimensions": "",
+    "color": "Синий",
+    "material": "Пластик, металл"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 8,
+  "fields": {
+    "category": 3,
+    "name": "Перфоратор 800Вт",
+    "slug": "perforator-800w",
+    "brand": "MAKITA",
+    "description": "Перфоратор с режимами сверления и удара. Мощность: 800Вт. Регулировка скорости.",
+    "price": "7999.99",
+    "unit": "шт",
+    "stock": 8,
+    "available": true,
+    "created": "2025-12-29T15:27:14.300Z",
+    "updated": "2025-12-29T15:27:14.300Z",
+    "image": "",
+    "weight": "2.800",
+    "dimensions": "",
+    "color": "Бирюзовый",
+    "material": "Пластик, металл"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 9,
+  "fields": {
+    "category": 3,
+    "name": "Циркулярная пила 1200Вт",
+    "slug": "circular-saw-1200w",
+    "brand": "ЭНЕРГОМАШ",
+    "description": "Циркулярная пила с диском 185мм. Глубина пропила: 65мм. Защитный кожух.",
+    "price": "4599.99",
+    "unit": "шт",
+    "stock": 12,
+    "available": true,
+    "created": "2025-12-29T15:27:14.320Z",
+    "updated": "2025-12-29T15:27:14.320Z",
+    "image": "",
+    "weight": "4.200",
+    "dimensions": "",
+    "color": "Оранжевый",
+    "material": "Пластик, металл"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 10,
+  "fields": {
+    "category": 4,
+    "name": "Розетка двойная с заземлением",
+    "slug": "socket-double-grounded",
+    "brand": "LEGRAND",
+    "description": "Розетка двойная скрытого монтажа с заземлением. Цвет: белый.",
+    "price": "349.99",
+    "unit": "шт",
+    "stock": 65,
+    "available": true,
+    "created": "2025-12-29T15:27:14.338Z",
+    "updated": "2025-12-29T15:27:14.339Z",
+    "image": "",
+    "weight": null,
+    "dimensions": "",
+    "color": "Белый",
+    "material": "Пластик, латунь"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 11,
+  "fields": {
+    "category": 4,
+    "name": "Выключатель одноклавишный",
+    "slug": "switch-single",
+    "brand": "SCHNEIDER",
+    "description": "Выключатель скрытого монтажа для освещения. Одноклавишный.",
+    "price": "279.99",
+    "unit": "шт",
+    "stock": 78,
+    "available": true,
+    "created": "2025-12-29T15:27:14.356Z",
+    "updated": "2025-12-29T15:27:14.356Z",
+    "image": "",
+    "weight": null,
+    "dimensions": "",
+    "color": "Белый",
+    "material": "Пластик"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 12,
+  "fields": {
+    "category": 4,
+    "name": "Кабель ВВГнг 3x2.5",
+    "slug": "cable-vvgng-3x2-5",
+    "brand": "Камкабель",
+    "description": 
