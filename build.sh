@@ -1,42 +1,36 @@
 #!/usr/bin/env bash
-# build.sh
+# build.sh - SAFE VERSION
 
 set -o errexit
 
 echo "=== 1. Установка зависимостей ==="
 pip install -r requirements.txt
 
-echo "=== 2. Показываю список миграций ==="
+echo "=== 2. Показываю ВСЕ миграции (должен быть store) ==="
 python manage.py showmigrations
 
-echo "=== 3. Применяем миграции базы данных ==="
+echo "=== 3. Применяем миграции ==="
 python manage.py migrate --noinput
 
-echo "=== 4. Создаём суперпользователя (если нет) ==="
+echo "=== 4. ТОЛЬКО ПРОВЕРКА: создаём суперпользователя БЕЗ профиля ==="
 python manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
 if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@example.com', 'ваш_надёжный_пароль')
-    print('Суперпользователь создан')
+    # Временно отключаем сигнал создания профиля
+    from django.db.models import signals
+    from store import models
+    signals.post_save.disconnect(models.create_user_profile, sender=User)
+
+    # Создаём пользователя
+    user = User.objects.create_superuser('admin', 'admin@example.com', 'Admin123!smartexamplewordnumbertwoandrdfmodsfklsmasmdla')
+    print(f'Суперпользователь {user.username} создан (профиль будет создан позже)')
 else:
     print('Суперпользователь уже существует')
 EOF
 
-echo "=== 5. Создаём тестовые категории (если нет) ==="
-python manage.py shell << EOF
-from store.models import Category
-
-if Category.objects.count() == 0:
-    Category.objects.create(name='Инструменты', slug='tools')
-    Category.objects.create(name='Материалы', slug='materials')
-    print('Тестовые категории созданы')
-else:
-    print('Категории уже существуют')
-EOF
-
-echo "=== 6. Собираем статические файлы ==="
+echo "=== 5. Сбор статических файлов ==="
 python manage.py collectstatic --noinput
 
-echo "=== Сборка успешно завершена ==="
+echo "=== СБОРКА ЗАВЕРШЕНА ==="
