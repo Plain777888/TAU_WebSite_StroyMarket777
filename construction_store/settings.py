@@ -151,3 +151,29 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CART_SESSION_ID = 'cart'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+from django.core.management import execute_from_command_line
+
+# Проверяем, что мы в среде выполнения (не во время сборки)
+if os.environ.get('RUN_MAIN') or not os.environ.get('WERKZEUG_RUN_MAIN'):
+    try:
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+
+        # Параметры суперпользователя (ИЗМЕНИТЕ ПАРОЛЬ!)
+        username = 'admin'
+        email = 'admin@example.com'
+        password = 'dlfsmlkdmalmdKFSLSL123456!klsmfkmdaasft'  # ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ НА СВОЙ
+
+        # Создаём, если не существует
+        if not User.objects.filter(username=username).exists():
+            print('🔄 Создание суперпользователя...')
+            User.objects.create_superuser(username=username, email=email, password=password)
+            print('✅ Суперпользователь создан!')
+        else:
+            print('ℹ️ Суперпользователь уже существует.')
+
+    except Exception as e:
+        print(f'⚠️ Не удалось создать суперпользователя: {e}')
