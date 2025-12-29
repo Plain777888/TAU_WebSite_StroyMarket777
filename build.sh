@@ -7,6 +7,7 @@ set -o errexit
 pip install -r requirements.txt
 
 # Применяем миграции базы данных
+python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
 python manage.py create_superuser_if_none_exists \
