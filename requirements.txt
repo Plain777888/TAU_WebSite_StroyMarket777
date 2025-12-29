@@ -11,3 +11,5 @@ wheel==0.45.1
 gunicorn
 dj-database-url==2.2.0
 psycopg2-binary==2.9.10
+python-dotenv
+django-environ
