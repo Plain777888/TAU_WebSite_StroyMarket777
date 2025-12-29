@@ -33,6 +33,133 @@
             top: -10px;
             left: -5px;
         }
+        /* Стили для компактной навигации категорий */
+        .categories-nav-container {
+            position: relative;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 5px 0;
+        }
+
+        .categories-nav-wrapper {
+            position: relative;
+            overflow: hidden;
+            padding: 0 40px;
+        }
+
+        .categories-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 5px 0;
+            -ms-overflow-style: none;  /* IE и Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .categories-nav::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .category-nav-link {
+            white-space: nowrap;
+            padding: 8px 16px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            color: #495057;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .category-nav-link:hover {
+            background-color: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 107, 53, 0.2);
+        }
+
+        .category-nav-link.active {
+            background-color: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .nav-scroll-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-scroll-btn:hover {
+            background-color: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-scroll-btn-left {
+            left: 5px;
+        }
+
+        .nav-scroll-btn-right {
+            right: 5px;
+        }
+
+        .nav-scroll-btn i {
+            font-size: 16px;
+        }
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .categories-nav-wrapper {
+                padding: 0 35px;
+            }
+
+            .category-nav-link {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            .nav-scroll-btn {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        /* Анимация для кнопок */
+        @keyframes pulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.05); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        .nav-scroll-btn.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Индикатор прокрутки */
+        .scroll-indicator {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            height: 2px;
+            background-color: #ff6b35;
+            transition: width 0.3s ease;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -53,11 +180,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'store:index' %}">Главная</a>
                     </li>
-                    {% for category in categories %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
-                    </li>
-                    {% endfor %}
+<!--                    {% for category in categories %}-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="{{ category.get_absolute_url }}">{{ category.name }}</a>-->
+<!--                    </li>-->
+<!--                    {% endfor %}-->
                 </ul>
 
                 <!-- Поиск -->
@@ -109,7 +236,39 @@
                 </a>
             </div>
         </div>
+        </div>
     </nav>
+     <!-- Компактная навигация категорий -->
+    <div class="categories-nav-container">
+        <div class="container">
+            <div class="categories-nav-wrapper">
+                <!-- Кнопка прокрутки влево -->
+                <div class="nav-scroll-btn nav-scroll-btn-left" id="scrollLeftBtn">
+                    <i class="bi bi-chevron-left"></i>
+                </div>
+
+                <!-- Контейнер категорий -->
+                <div class="categories-nav" id="categoriesNav">
+                    {% for category in categories %}
+                    <a href="{{ category.get_absolute_url }}"
+                       class="category-nav-link {% if request.resolver_match.url_name == 'category' and category.slug in request.path %}active{% endif %}">
+                        {{ category.name }}
+                    </a>
+                    {% empty %}
+                    <span class="text-muted">Категории не найдены</span>
+                    {% endfor %}
+                </div>
+
+                <!-- Кнопка прокрутки вправо -->
+                <div class="nav-scroll-btn nav-scroll-btn-right" id="scrollRightBtn">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+                <!-- Индикатор прокрутки -->
+                <div class="scroll-indicator" id="scrollIndicator"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Сообщения -->
     {% if messages %}
@@ -156,6 +315,131 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Скрипт для прокрутки категорий -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoriesNav = document.getElementById('categoriesNav');
+            const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+            const scrollRightBtn = document.getElementById('scrollRightBtn');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+
+            // Скорость прокрутки
+            const scrollAmount = 200;
+
+            // Показываем/скрываем кнопки в зависимости от наличия прокрутки
+            function updateScrollButtons() {
+                // Проверяем, нужна ли прокрутка
+                const isScrollable = categoriesNav.scrollWidth > categoriesNav.clientWidth;
+
+                if (isScrollable) {
+                    scrollLeftBtn.style.display = 'flex';
+                    scrollRightBtn.style.display = 'flex';
+                    updateScrollIndicator();
+                } else {
+                    scrollLeftBtn.style.display = 'none';
+                    scrollRightBtn.style.display = 'none';
+                    scrollIndicator.style.width = '100%';
+                }
+
+                // Добавляем/убираем пульсацию для кнопок
+                if (categoriesNav.scrollLeft > 0) {
+                    scrollLeftBtn.classList.add('pulse');
+                } else {
+                    scrollLeftBtn.classList.remove('pulse');
+                }
+
+                if (categoriesNav.scrollLeft < categoriesNav.scrollWidth - categoriesNav.clientWidth - 10) {
+                    scrollRightBtn.classList.add('pulse');
+                } else {
+                    scrollRightBtn.classList.remove('pulse');
+                }
+            }
+
+            // Обновляем индикатор прокрутки
+            function updateScrollIndicator() {
+                const scrollPercentage = categoriesNav.scrollLeft / (categoriesNav.scrollWidth - categoriesNav.clientWidth);
+                const indicatorWidth = categoriesNav.clientWidth / categoriesNav.scrollWidth * 100;
+                const indicatorPosition = scrollPercentage * (100 - indicatorWidth);
+
+                scrollIndicator.style.width = `${indicatorWidth}%`;
+                scrollIndicator.style.left = `${indicatorPosition}%`;
+            }
+
+            // Прокрутка влево
+            scrollLeftBtn.addEventListener('click', function() {
+                categoriesNav.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Прокрутка вправо
+            scrollRightBtn.addEventListener('click', function() {
+                categoriesNav.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Обработка клавиатуры
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    categoriesNav.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                } else if (e.key === 'ArrowRight') {
+                    categoriesNav.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            });
+
+            // Прокрутка колесом мыши
+            categoriesNav.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                categoriesNav.scrollLeft += e.deltaY;
+            });
+
+            // Обновляем кнопки при прокрутке
+            categoriesNav.addEventListener('scroll', updateScrollButtons);
+
+            // Обновляем при изменении размера окна
+            window.addEventListener('resize', updateScrollButtons);
+
+            // Инициализация при загрузке
+            updateScrollButtons();
+
+            // Активация текущей категории при прокрутке
+            const categoryLinks = document.querySelectorAll('.category-nav-link');
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            categoryLinks.forEach(link => link.classList.remove('active'));
+                            entry.target.classList.add('active');
+                        }
+                    });
+                },
+                {
+                    root: categoriesNav,
+                    threshold: 0.6
+                }
+            );
+
+            categoryLinks.forEach(link => observer.observe(link));
+
+            // Автоматическая прокрутка к активной категории при загрузке
+            const activeCategory = document.querySelector('.category-nav-link.active');
+            if (activeCategory) {
+                setTimeout(() => {
+                    activeCategory.scrollIntoView({
+                        behavior: 'smooth',
+                        inline: 'center',
+                        block: 'nearest'
+                    });
+                }, 500);
+            }
+        });
+    </script>
+
     {% block extra_js %}{% endblock %}
+
 </body>
 </html>
