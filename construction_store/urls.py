@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('store.urls')),
     path('check-data/', views.check_data, name='check_data'),
+    path('check-fixtures/', views.check_fixtures, name='check_fixtures'),
 ]
 
 if settings.DEBUG:

@@ -53,3 +53,32 @@ def reset_admin_password(request):
             'success': False,
             'message': 'Пользователь admin не найден'
         }))
+
+
+import os
+from django.http import JsonResponse
+
+
+def check_fixtures(request):
+    """Проверка наличия файлов с данными"""
+    fixtures_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(fixtures_dir)
+
+    files_to_check = [
+        'unicode_fixed_data.json',
+        'data.json',
+        'clean_data.json',
+        'store_data.json',
+        'test_data.json'
+    ]
+
+    found_files = {}
+    for filename in files_to_check:
+        filepath = os.path.join(project_root, filename)
+        exists = os.path.exists(filepath)
+        found_files[filename] = {
+            'exists': exists,
+            'size': os.path.getsize(filepath) if exists else 0
+        }
+
+    return JsonResponse(found_files)
