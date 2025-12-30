@@ -191,110 +191,80 @@ if ('RUN_MAIN' in os.environ or not 'WERKZEUG_RUN_MAIN' in os.environ) and 'test
 # === АВТОМАТИЧЕСКАЯ НАСТРОЙКА ПРИ ЗАПУСКЕ ===
 import os
 import sys
+import time
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
 
+
 def startup_tasks():
-    """Выполняется при каждом запуске приложения на Render"""
+    """Задачи, выполняемые после полного запуска Django"""
+    time.sleep(3)  # Ждем полной инициализации Django
+
     try:
-        from django.db import connection
+        print("🚀 Запуск startup_tasks...")
+
+        # 1. Проверяем/создаем суперпользователя
         from django.contrib.auth import get_user_model
-        from django.core.management import call_command
-
-        # 1. Проверяем подключение к базе
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")
-        logger.info("✅ Подключение к базе данных успешно")
-
-        # 2. Создаем/сбрасываем суперпользователя
         User = get_user_model()
+
         username = 'admin'
         email = 'admin@example.com'
-        password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!!'  # ⚠️ ИЗМЕНИТЕ ПАРОЛЬ!
+        password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!!'  # ⚠️ ЗАМЕНИТЕ!
 
-        try:
-            user, created = User.objects.get_or_create(
-                username=username,
-                defaults={'email': email, 'is_staff': True, 'is_superuser': True}
-            )
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={'email': email, 'is_staff': True, 'is_superuser': True}
+        )
 
-            if created:
-                user.set_password(password)
-                user.save()
-                logger.info(f'✅ Суперпользователь "{username}" создан')
-            else:
-                # Сбрасываем пароль на известный
-                user.set_password(password)
-                user.save()
-                user.is_staff = True
-                user.is_superuser = True
-                user.save()
-                logger.info(f'✅ Пароль суперпользователя "{username}" сброшен')
+        if created:
+            user.set_password(password)
+            user.save()
+            print(f'✅ Создан суперпользователь "{username}"')
+        else:
+            # Сбрасываем пароль на известный
+            user.set_password(password)
+            user.save()
+            print(f'✅ Пароль для "{username}" сброшен')
 
-            print(f'=== ДАННЫЕ ДЛЯ ВХОДА В АДМИНКУ ===')
-            print(f'URL: https://tau-website-stroymarket777.onrender.com/admin/')
-            print(f'Логин: {username}')
-            print(f'Пароль: {password}')
-            print(f'================================')
+        # 2. Загружаем данные магазина
+        from django.core.management import call_command
+        from store.models import Category, Product
 
-        except Exception as e:
-            logger.error(f'❌ Ошибка создания пользователя: {e}')
+        # Проверяем, есть ли уже данные
+        if Category.objects.count() == 0 or Product.objects.count() == 0:
+            print("📦 Загружаю данные магазина...")
 
-        # 3. Проверяем и загружаем данные
-        try:
-            from store.models import Category, Product
-            cat_count = Category.objects.count()
-            prod_count = Product.objects.count()
+            # Пробуем разные файлы
+            fixtures = ['unicode_fixed_data.json', 'store_data.json', 'data.json']
+            for fixture in fixtures:
+                if os.path.exists(fixture):
+                    try:
+                        call_command('loaddata', fixture)
+                        print(f"✅ Данные загружены из {fixture}")
+                        break
+                    except Exception as e:
+                        print(f"❌ Ошибка загрузки {fixture}: {e}")
 
-            logger.info(f'📊 Статистика базы: Категорий={cat_count}, Товаров={prod_count}')
-
-            # Если данных нет, пробуем загрузить
-            if cat_count == 0 or prod_count == 0:
-                logger.info('🔄 Данных мало, пытаюсь загрузить фикстуры...')
-
-                # Пробуем загрузить данные разными способами
-                fixture_files = [
-                    'unicode_fixed_data.json',
-                    'data.json',
-                    'clean_data.json',
-                    'store_data.json'
-                ]
-
-                for fixture in fixture_files:
-                    if os.path.exists(fixture):
-                        try:
-                            call_command('loaddata', fixture, verbosity=0)
-                            logger.info(f'✅ Загружены данные из {fixture}')
-                            break
-                        except:
-                            continue
-
-                # Обновляем статистику
-                cat_count = Category.objects.count()
-                prod_count = Product.objects.count()
-                logger.info(f'📊 После загрузки: Категорий={cat_count}, Товаров={prod_count}')
-
-        except Exception as e:
-            logger.error(f'❌ Ошибка проверки данных: {e}')
+        # 3. Выводим итоги
+        print("\n📊 ИТОГО В БАЗЕ:")
+        print(f"   Категорий: {Category.objects.count()}")
+        print(f"   Товаров: {Product.objects.count()}")
+        print(f"   Пользователей: {User.objects.count()}")
+        print(f"\n🔑 ДАННЫЕ ДЛЯ ВХОДА В АДМИНКУ:")
+        print(f"   URL: https://tau-website-stroymarket777.onrender.com/admin/")
+        print(f"   Логин: {username}")
+        print(f"   Пароль: {password}")
 
     except Exception as e:
-        logger.error(f'⚠️ Startup tasks error: {e}')
+        print(f"⚠️ Ошибка в startup_tasks: {e}")
 
 
-# Запускаем задачи при старте (только в production)
-if os.environ.get('RENDER') or not 'test' in sys.argv:
-    # Небольшая задержка, чтобы база успела запуститься
-    import threading
-    import time
-
-
-    def delayed_startup():
-        time.sleep(5)  # Ждем 5 секунд
-        startup_tasks()
-
-
-    thread = threading.Thread(target=delayed_startup)
+# Запускаем в отдельном потоке при старте
+if os.environ.get('RENDER'):
+    print("🔄 RENDER detected, scheduling startup tasks...")
+    thread = threading.Thread(target=startup_tasks)
     thread.daemon = True
     thread.start()
