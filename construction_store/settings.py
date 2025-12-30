@@ -187,3 +187,114 @@ if ('RUN_MAIN' in os.environ or not 'WERKZEUG_RUN_MAIN' in os.environ) and 'test
             print('⚠️ База данных временно недоступна, пропускаем создание пользователя')
         else:
             print(f'⚠️ Ошибка при проверке/создании суперпользователя: {e}')
+
+# === АВТОМАТИЧЕСКАЯ НАСТРОЙКА ПРИ ЗАПУСКЕ ===
+import os
+import sys
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def startup_tasks():
+    """Выполняется при каждом запуске приложения на Render"""
+    try:
+        from django.db import connection
+        from django.contrib.auth import get_user_model
+        from django.core.management import call_command
+
+        # 1. Проверяем подключение к базе
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        logger.info("✅ Подключение к базе данных успешно")
+
+        # 2. Создаем/сбрасываем суперпользователя
+        User = get_user_model()
+        username = 'admin'
+        email = 'admin@example.com'
+        password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!!'  # ⚠️ ИЗМЕНИТЕ ПАРОЛЬ!
+
+        try:
+            user, created = User.objects.get_or_create(
+                username=username,
+                defaults={'email': email, 'is_staff': True, 'is_superuser': True}
+            )
+
+            if created:
+                user.set_password(password)
+                user.save()
+                logger.info(f'✅ Суперпользователь "{username}" создан')
+            else:
+                # Сбрасываем пароль на известный
+                user.set_password(password)
+                user.save()
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+                logger.info(f'✅ Пароль суперпользователя "{username}" сброшен')
+
+            print(f'=== ДАННЫЕ ДЛЯ ВХОДА В АДМИНКУ ===')
+            print(f'URL: https://tau-website-stroymarket777.onrender.com/admin/')
+            print(f'Логин: {username}')
+            print(f'Пароль: {password}')
+            print(f'================================')
+
+        except Exception as e:
+            logger.error(f'❌ Ошибка создания пользователя: {e}')
+
+        # 3. Проверяем и загружаем данные
+        try:
+            from store.models import Category, Product
+            cat_count = Category.objects.count()
+            prod_count = Product.objects.count()
+
+            logger.info(f'📊 Статистика базы: Категорий={cat_count}, Товаров={prod_count}')
+
+            # Если данных нет, пробуем загрузить
+            if cat_count == 0 or prod_count == 0:
+                logger.info('🔄 Данных мало, пытаюсь загрузить фикстуры...')
+
+                # Пробуем загрузить данные разными способами
+                fixture_files = [
+                    'unicode_fixed_data.json',
+                    'data.json',
+                    'clean_data.json',
+                    'store_data.json'
+                ]
+
+                for fixture in fixture_files:
+                    if os.path.exists(fixture):
+                        try:
+                            call_command('loaddata', fixture, verbosity=0)
+                            logger.info(f'✅ Загружены данные из {fixture}')
+                            break
+                        except:
+                            continue
+
+                # Обновляем статистику
+                cat_count = Category.objects.count()
+                prod_count = Product.objects.count()
+                logger.info(f'📊 После загрузки: Категорий={cat_count}, Товаров={prod_count}')
+
+        except Exception as e:
+            logger.error(f'❌ Ошибка проверки данных: {e}')
+
+    except Exception as e:
+        logger.error(f'⚠️ Startup tasks error: {e}')
+
+
+# Запускаем задачи при старте (только в production)
+if os.environ.get('RENDER') or not 'test' in sys.argv:
+    # Небольшая задержка, чтобы база успела запуститься
+    import threading
+    import time
+
+
+    def delayed_startup():
+        time.sleep(5)  # Ждем 5 секунд
+        startup_tasks()
+
+
+    thread = threading.Thread(target=delayed_startup)
+    thread.daemon = True
+    thread.start()
