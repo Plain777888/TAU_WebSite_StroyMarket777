@@ -25,6 +25,10 @@ DATABASES = {
         'OPTIONS': {'sslmode': 'require'},
     }
 }
+# Supabase настройки
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')  # для записи
 # DATABASES = {
 #     'default': env.db(),
 #     'OPTIONS': {
@@ -81,6 +85,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
+    'products',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -143,7 +148,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#MEDIA_ROOT = BASE_DIR / 'media'
+
+# Bucket name в Supabase Storage
+SUPABASE_STORAGE_BUCKET = 'products'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
@@ -156,37 +165,37 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 import os
 import sys
 
-# Проверяем, что это не команда управления Django (migrate, collectstatic и т.д.)
-# и не выполнение тестов
-if ('RUN_MAIN' in os.environ or not 'WERKZEUG_RUN_MAIN' in os.environ) and 'test' not in sys.argv:
-    try:
-        from django.contrib.auth import get_user_model
-        from django.db import IntegrityError
-
-        User = get_user_model()
-
-        # Параметры суперпользователя
-        username = 'admin'
-        email = 'admin@example.com'
-        password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!'  # ⚠️ ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ!
-
-        # Пытаемся создать только если не существует
-        if not User.objects.filter(username=username).exists():
-            print('🔄 Создание суперпользователя...')
-            try:
-                User.objects.create_superuser(username=username, email=email, password=password)
-                print(f'✅ Суперпользователь "{username}" создан!')
-            except IntegrityError:
-                print(f'ℹ️ Пользователь "{username}" уже существует (IntegrityError)')
-        else:
-            print(f'ℹ️ Суперпользователь "{username}" уже существует.')
-
-    except Exception as e:
-        # Игнорируем ошибки, связанные с недоступностью базы данных при старте
-        if 'database' in str(e).lower() or 'connection' in str(e).lower():
-            print('⚠️ База данных временно недоступна, пропускаем создание пользователя')
-        else:
-            print(f'⚠️ Ошибка при проверке/создании суперпользователя: {e}')
+# # Проверяем, что это не команда управления Django (migrate, collectstatic и т.д.)
+# # и не выполнение тестов
+# if ('RUN_MAIN' in os.environ or not 'WERKZEUG_RUN_MAIN' in os.environ) and 'test' not in sys.argv:
+#     try:
+#         from django.contrib.auth import get_user_model
+#         from django.db import IntegrityError
+#
+#         User = get_user_model()
+#
+#         # Параметры суперпользователя
+#         username = 'admin'
+#         email = 'admin@example.com'
+#         password = 'mafdogmldkmflskmfafmoiewSJNSKFJSF312312!'  # ⚠️ ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ!
+#
+#         # Пытаемся создать только если не существует
+#         if not User.objects.filter(username=username).exists():
+#             print('🔄 Создание суперпользователя...')
+#             try:
+#                 User.objects.create_superuser(username=username, email=email, password=password)
+#                 print(f'✅ Суперпользователь "{username}" создан!')
+#             except IntegrityError:
+#                 print(f'ℹ️ Пользователь "{username}" уже существует (IntegrityError)')
+#         else:
+#             print(f'ℹ️ Суперпользователь "{username}" уже существует.')
+#
+#     except Exception as e:
+#         # Игнорируем ошибки, связанные с недоступностью базы данных при старте
+#         if 'database' in str(e).lower() or 'connection' in str(e).lower():
+#             print('⚠️ База данных временно недоступна, пропускаем создание пользователя')
+#         else:
+#             print(f'⚠️ Ошибка при проверке/создании суперпользователя: {e}')
 
 # === АВТОМАТИЧЕСКАЯ НАСТРОЙКА ПРИ ЗАПУСКЕ ===
 import os

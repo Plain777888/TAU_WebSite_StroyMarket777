@@ -13,3 +13,4 @@ dj-database-url==2.2.0
 psycopg2-binary==2.9.10
 python-dotenv
 django-environ
+supabase
