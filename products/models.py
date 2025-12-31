@@ -7,6 +7,9 @@ from io import BytesIO
 from PIL import Image
 import uuid
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Временное локальное хранилище
 temp_storage = FileSystemStorage(location='media/temp')
 
@@ -43,28 +46,54 @@ class Product(models.Model):
                 # Сохраняем URL
                 self.image_url = supabase_url
 
-                # Очищаем локальный файл (чтобы не занимал место)
-                self.image_file.delete(save=False)
-                self.image_file = None
+                # ВАЖНО: очищаем файловое поле
+                self.image_file = None  # или self.image_file.delete(save=False)
 
         super().save(*args, **kwargs)
 
     def upload_to_supabase(self):
         """Загрузка изображения в Supabase Storage"""
         try:
+            # Проверяем, есть ли файл
+            if not self.image_file or not hasattr(self.image_file, 'file'):
+                print("Нет файла для загрузки")
+                return None
+
             # Инициализация клиента Supabase
             supabase: Client = create_client(
                 os.environ.get('SUPABASE_URL'),
-                os.environ.get('SUPABASE_SERVICE_KEY')  # service key для записи
+                os.environ.get('SUPABASE_SERVICE_KEY')
             )
+
+            # Получаем оригинальный файл
+            original_file = self.image_file.file
 
             # Генерируем уникальное имя файла
             original_name = self.image_file.name
             file_extension = os.path.splitext(original_name)[1].lower()
             unique_filename = f"{uuid.uuid4()}{file_extension}"
 
+            # Получаем content_type (варианты)
+            if hasattr(original_file, 'content_type'):
+                content_type = original_file.content_type
+            elif hasattr(self.image_file, 'content_type'):
+                content_type = self.image_file.content_type
+            else:
+                # Определяем по расширению
+                if file_extension in ['.jpg', '.jpeg']:
+                    content_type = 'image/jpeg'
+                elif file_extension == '.png':
+                    content_type = 'image/png'
+                elif file_extension == '.webp':
+                    content_type = 'image/webp'
+                else:
+                    content_type = 'application/octet-stream'
+
+            print(f"Content-Type: {content_type}")
+
             # Читаем файл
-            file_content = self.image_file.read()
+            original_file.seek(0)  # Важно: переходим в начало файла
+            file_content = original_file.read()
 
             # Оптимизируем изображение (опционально)
             if file_extension in ['.jpg', '.jpeg', '.png', '.webp']:
@@ -73,24 +102,27 @@ class Product(models.Model):
                     file_content = optimized_content
 
             # Загружаем в Supabase Storage
+            print(f"Загружаем файл {unique_filename} ({len(file_content)} bytes)...")
+
             response = supabase.storage.from_('products').upload(
                 unique_filename,
                 file_content,
                 {
-                    "content-type": self.image_file.content_type,
-                    "cache-control": "public, max-age=31536000"  # кеш на год
+                    "content-type": content_type,
+                    "cache-control": "public, max-age=31536000"
                 }
             )
 
             # Получаем публичный URL
             public_url = supabase.storage.from_('products').get_public_url(unique_filename)
 
-            print(f"Файл загружен в Supabase: {public_url}")
+            print(f"✅ Файл загружен в Supabase: {public_url}")
             return public_url
 
         except Exception as e:
-            print(f"Ошибка загрузки в Supabase: {e}")
-            # Можно сохранить локально как fallback
+            print(f"❌ Ошибка загрузки в Supabase: {e}")
+            import traceback
+            traceback.print_exc()
             return None
 
     def optimize_image(self, file_content, extension):
