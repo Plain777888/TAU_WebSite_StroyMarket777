@@ -1,7 +1,9 @@
-# test_upload_fixed2.py
+# test_admin_fix.py
 import os
 import django
 import sys
+from PIL import Image
+from io import BytesIO
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'construction_store.settings')
@@ -10,76 +12,57 @@ django.setup()
 from products.models import Product
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-# Создаем БОЛЬШОЙ тестовый файл (имитация реального изображения)
-# PIL не сможет обработать слишком маленький файл
-jpg_header = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00'  # Заголовок JPEG
-test_content = jpg_header + b'x' * 10000  # Делаем файл побольше
+print("=" * 60)
+print("ТЕСТ: Исправление проблемы с админкой")
+print("=" * 60)
 
+# Создаем реальное изображение
+image = Image.new('RGB', (400, 300), color='green')
+img_io = BytesIO()
+image.save(img_io, 'JPEG', quality=90)
+img_io.seek(0)
+
+# Создаем файл как в админке
 test_file = SimpleUploadedFile(
-    'test_image.jpg',
-    test_content,
+    'test_fix.jpg',
+    img_io.getvalue(),
     content_type='image/jpeg'
 )
 
-# Тест 1: Сохранение через create
-print("=" * 50)
-print("ТЕСТ 1: Создание нового товара")
-print("=" * 50)
-
+# Тест 1: Создание через objects.create()
+print("\n1. Тест: Product.objects.create()")
 try:
-    product = Product.objects.create(
-        name="ТЕСТОВЫЙ ТОВАР 1",
-        price=999.99,
+    p1 = Product.objects.create(
+        name="ТЕСТ FIX 1",
+        price=1000,
         image_file=test_file
     )
-
-    print(f"Товар ID: {product.id}")
-    print(f"Имя файла: {product.image_file.name}")
-    print(f"URL в БД: {product.image_url}")
-
-    if product.image_url:
-        print(f"✅ УСПЕХ! URL: {product.image_url}")
-    else:
-        print("❌ ОШИБКА: URL не создан")
-
+    print(f"   Результат: ID={p1.id}, URL={p1.image_url}")
+    print(f"   image_file после save: {p1.image_file}")
 except Exception as e:
-    print(f"❌ ОШИБКА при создании: {e}")
-    import traceback
+    print(f"   ОШИБКА: {e}")
 
-    traceback.print_exc()
-
-# Тест 2: Создание объекта и вызов save вручную
-print("\n" + "=" * 50)
-print("ТЕСТ 2: Ручной вызов save()")
-print("=" * 50)
-
+# Тест 2: Создание и вызов save()
+print("\n2. Тест: Создание + ручной save()")
 try:
     test_file2 = SimpleUploadedFile(
-        'test2.jpg',
-        jpg_header + b'y' * 10000,
+        'test_fix2.jpg',
+        Image.new('RGB', (200, 200), color='blue').tobytes(),
         content_type='image/jpeg'
     )
 
-    product2 = Product(
-        name="ТЕСТОВЫЙ ТОВАР 2",
-        price=1999.99,
-    )
-    product2.image_file = test_file2
-    product2.save()  # Вызываем save вручную
+    p2 = Product(name="ТЕСТ FIX 2", price=2000)
+    p2.image_file = test_file2
+    p2.save()
 
-    print(f"Товар ID: {product2.id}")
-    print(f"URL в БД: {product2.image_url}")
+    print(f"   Результат: ID={p2.id}, URL={p2.image_url}")
+    print(f"   image_file после save: {p2.image_file}")
 
 except Exception as e:
-    print(f"❌ ОШИБКА: {e}")
-    import traceback
+    print(f"   ОШИБКА: {e}")
 
-    traceback.print_exc()
-
-# Проверка всех товаров в БД
-print("\n" + "=" * 50)
-print("ВСЕ ТОВАРЫ В БАЗЕ ДАННЫХ:")
-print("=" * 50)
-
+# Проверяем все товары
+print("\n" + "=" * 60)
+print("ВСЕ ТОВАРЫ В БАЗЕ:")
 for p in Product.objects.all():
-    print(f"- {p.name}: {p.image_url or 'Нет изображения'}")
+    print(f"- {p.name}: {p.image_url or 'НЕТ URL'}")

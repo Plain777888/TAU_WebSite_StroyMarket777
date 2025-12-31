@@ -37,19 +37,40 @@ class Product(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Если есть новое изображение
+        # ВАЖНО: Читаем файл ДО вызова upload_to_supabase
+        file_content = None
+        file_name = None
+
         if self.image_file and hasattr(self.image_file, 'file'):
-            # Загружаем в Supabase
+            print(f"SAVE: Найден файл {self.image_file.name}")
+
+            # 1. Сохраняем имя и читаем содержимое
+            file_name = self.image_file.name
+            original_file = self.image_file.file
+            original_file.seek(0)
+            file_content = original_file.read()
+            original_file.seek(0)  # Возвращаемся в начало для возможного повторного чтения
+
+            # 2. Загружаем в Supabase
             supabase_url = self.upload_to_supabase()
 
             if supabase_url:
                 # Сохраняем URL
                 self.image_url = supabase_url
+                print(f"SAVE: URL сохранен: {supabase_url}")
 
-                # ВАЖНО: очищаем файловое поле
-                self.image_file = None  # или self.image_file.delete(save=False)
-
+        # Вызываем родительский save
         super().save(*args, **kwargs)
+
+        # 3. ПОСЛЕ сохранения очищаем поле (если загрузка удалась)
+        if self.image_file and self.image_url and hasattr(self.image_file, 'file'):
+            try:
+                self.image_file.delete(save=False)
+                # Не очищаем self.image_file = None, чтобы не ломать админку
+                # Вместо этого обновим запись без файла
+                Product.objects.filter(id=self.id).update(image_file=None)
+            except:
+                pass
 
     def upload_to_supabase(self):
         """Загрузка изображения в Supabase Storage"""
