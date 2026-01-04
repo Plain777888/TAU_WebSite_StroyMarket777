@@ -29,6 +29,12 @@ DATABASES = {
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')  # для записи
+SUPABASE_BUCKET = "products"  # Имя bucket в Supabase Storage
+
+# Настройки файлов
+DEFAULT_FILE_STORAGE = 'supabase_storage.SupabaseStorage'
+
+
 
 LOGGING = {
     'version': 1,
@@ -63,6 +69,10 @@ LOGGING = {
 #     # читает DATABASE_URL из .env
 # }
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# URL для медиа файлов
+MEDIA_URL = f'{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'temp_media')
 
 # # Проверяем, есть ли переменная DATABASE_URL (для продакшена)
 # if os.environ.get('DATABASE_URL'):
@@ -110,7 +120,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
-    'products',
     'crispy_forms',
     'crispy_bootstrap5',
 ]

@@ -1,56 +1,36 @@
-import socket
-import ssl
-import sys
+# test_supabase.py
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'construction_store.settings')
+django.setup()
+
+from supabase import create_client
+from django.conf import settings
 
 
-def test_connection():
-    host = "db.jfzkqlynhzlzbuqihbxj.supabase.co"
-    port = 5432
+def test_supabase_connection():
+    print("Testing Supabase connection...")
 
-    print(f"Тестирование подключения к {host}:{port}")
+    # Инициализация клиента
+    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
 
-    # 1. Проверка DNS
+    # Проверка соединения
     try:
-        # Принудительно ищем IPv6 адрес
-        info = socket.getaddrinfo(host, port, socket.AF_INET6, socket.SOCK_STREAM)
-        ipv6_addr = info[0][4][0]
-        print(f"✅ IPv6 адрес найден: {ipv6_addr}")
-    except Exception as e:
-        print(f"❌ Ошибка DNS: {e}")
+        # Получаем список buckets
+        buckets = supabase.storage.list_buckets()
+        print(f"Available buckets: {buckets}")
 
-        # Пробуем получить через nslookup
-        import subprocess
-        result = subprocess.run(['nslookup', host], capture_output=True, text=True)
-        print(f"Результат nslookup:\n{result.stdout}")
-        return False
+        # Проверяем доступ к нужному bucket
+        response = supabase.storage.from_('products').list()
+        print(f"Files in 'products' bucket: {response}")
 
-    # 2. Проверка TCP подключения
-    try:
-        # Создаем сокет с IPv6
-        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-        sock.settimeout(5)
-
-        print(f"Попытка подключения к {ipv6_addr}:{port}...")
-        sock.connect((ipv6_addr, port))
-        print("✅ TCP подключение успешно!")
-
-        # Проверяем SSL/TLS (PostgreSQL использует SSL)
-        context = ssl.create_default_context()
-        ssl_sock = context.wrap_socket(sock, server_hostname=host)
-        print("✅ SSL подключение успешно!")
-
-        ssl_sock.close()
+        print("✓ Supabase connection successful!")
         return True
-
-    except socket.timeout:
-        print("❌ Таймаут подключения")
-    except ConnectionRefusedError:
-        print("❌ Подключение отклонено")
     except Exception as e:
-        print(f"❌ Ошибка подключения: {type(e).__name__}: {e}")
-
-    return False
+        print(f"✗ Error connecting to Supabase: {e}")
+        return False
 
 
 if __name__ == "__main__":
-    test_connection()
+    test_supabase_connection()

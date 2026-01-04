@@ -18,7 +18,7 @@
         <div class="col-md-6">
             <div class="card mb-4 border-0 shadow-sm">
                 {% if product.image %}
-                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="max-height: 400px; object-fit: contain;">
+                <img src="{{ product.get_main_image }}" class="card-img-top" alt="{{ product.name }}" style="max-height: 400px; object-fit: contain;">
                 {% else %}
                 <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 400px;">
                     <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
@@ -28,7 +28,7 @@
                     <div class="row">
                         {% for image in product.images.all %}
                         <div class="col-3">
-                            <img src="{{ image.image.url }}" class="img-thumbnail" alt="{{ image.alt_text }}" style="height: 80px; object-fit: cover;">
+                            <img src="{{ product.get_main_image }}" class="img-thumbnail" alt="{{ image.alt_text }}" style="height: 80px; object-fit: cover;">
                         </div>
                         {% endfor %}
                     </div>
@@ -145,13 +145,13 @@
                 <div class="col-md-3 mb-4">
                     <div class="card product-card border-0 shadow-sm h-100">
                         {% if related.image %}
-                        <img src="{{ related.image.url }}" class="card-img-top product-img" alt="{{ related.name }}" style="height: 150px; object-fit: cover;">
+                        <img src="{{ related.get_main_image }}" class="card-img-top product-img" alt="{{ related.name }}" style="height: 150px; object-fit: cover;">
                         {% endif %}
                         <div class="card-body d-flex flex-column">
                             <h6 class="card-title">{{ related.name|truncatechars:40 }}</h6>
                             <div class="mt-auto">
                                 <p class="h6 text-primary">{{ related.price }} ₽</p>
-                                <a href="{{ related.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
+                                <a href="{{ related.get_main_image }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
                             </div>
                         </div>
                     </div>

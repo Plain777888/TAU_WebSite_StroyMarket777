@@ -18,6 +18,9 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit = models.CharField(max_length=10, default='шт')
+    stock = models.IntegerField(default=0)
+    image = models.CharField(max_length=500, blank=True, null=True)
 
     # Поле для временного хранения файла
     image_file = models.ImageField(

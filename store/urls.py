@@ -16,6 +16,8 @@ urlpatterns = [
     path('cart/remove/<int:cart_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
 
+    path('test-image/', views.test_image_url, name='test_image'),
+
     # Аутентификация
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),

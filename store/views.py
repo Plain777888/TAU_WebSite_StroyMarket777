@@ -291,3 +291,56 @@ def order_detail_view(request, order_id):
     order = get_object_or_404(Order, id=order_id, email=request.user.email)
 
     return render(request, 'store/auth/order_detail.html', {'order': order})
+
+
+# В views.py добавьте:
+from django.http import HttpResponse
+from django.conf import settings
+
+
+def test_image_url(request):
+    """Простая страница для теста изображения"""
+    from .models import Product
+
+    product = Product.objects.first()
+    if not product:
+        return HttpResponse("Нет товаров в базе")
+
+    html = f"""
+    <html>
+    <head><title>Тест изображения</title></head>
+    <body>
+        <h1>Тест изображения для: {product.name}</h1>
+
+        <h3>Данные:</h3>
+        <pre>
+        Поле image: {product.image}
+        SUPABASE_URL: {settings.SUPABASE_URL}
+        </pre>
+
+        <h3>Сформированный URL:</h3>
+        <p><code>{product.get_main_image()}</code></p>
+
+        <h3>Попробуйте открыть вручную:</h3>
+        <p><a href="{product.get_main_image()}" target="_blank">
+            {product.get_main_image()}
+        </a></p>
+
+        <h3>Тестовое изображение:</h3>
+        <img src="{product.get_main_image()}" 
+             style="max-width: 400px; border: 2px solid red;"
+             onerror="alert('Ошибка загрузки изображения!')">
+
+        <hr>
+        <p>Если изображение не загружается, проверьте:
+        <ol>
+            <li>Правильность SUPABASE_URL в settings.py</li>
+            <li>Права доступа в Supabase Storage</li>
+            <li>Что файл действительно существует по указанному пути</li>
+        </ol>
+        </p>
+    </body>
+    </html>
+    """
+
+    return HttpResponse(html)
