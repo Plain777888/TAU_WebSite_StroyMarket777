@@ -3,6 +3,316 @@
 {% block title %}{{ product.name }} - Строительный магазин{% endblock %}
 
 {% block content %}
+<style>
+
+    /* Основные стили */
+    .product-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .product-main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+
+    .product-images {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .product-info {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    /* Галерея - основной блок */
+    .gallery {
+        position: relative;
+    }
+
+    /* Основное изображение с кнопками навигации */
+    .main-image-container {
+        position: relative;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f9f9f9;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .main-image {
+        max-width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+
+    .main-image:hover {
+        transform: scale(1.01);
+    }
+
+    /* Кнопки навигации по бокам */
+    .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 24px;
+        color: #333;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        z-index: 10;
+    }
+
+    .nav-btn:hover {
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .nav-btn.prev {
+        left: 20px;
+    }
+
+    .nav-btn.next {
+        right: 20px;
+    }
+
+    .nav-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        transform: translateY(-50%) scale(1);
+    }
+
+    .nav-btn:disabled:hover {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Счетчик изображений */
+    .image-counter {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        z-index: 5;
+    }
+
+    /* Миниатюры */
+    .thumbnails {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 10px 0;
+        scrollbar-width: thin;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.3s;
+    }
+
+    .thumbnail:hover {
+        border-color: #3498db;
+        transform: translateY(-2px);
+    }
+
+    .thumbnail.active {
+        border-color: #e74c3c;
+    }
+
+    /* Модальное окно для полноэкранного просмотра */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-image-container {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    .modal-image {
+        max-width: 100%;
+        max-height: 90vh;
+        object-fit: contain;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .modal-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 30px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .modal-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-nav-btn.prev {
+        left: 20px;
+    }
+
+    .modal-nav-btn.next {
+        right: 20px;
+    }
+
+    .modal-counter {
+        position: absolute;
+        bottom: -40px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: white;
+        font-size: 16px;
+    }
+
+    /* Информация о товаре */
+    .product-price {
+        color: #e74c3c;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .stock-status {
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    .in-stock {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .out-of-stock {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .add-to-cart {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+        align-items: center;
+    }
+
+    .quantity-input {
+        width: 80px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .add-to-cart-btn {
+        padding: 12px 24px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s;
+    }
+
+    .add-to-cart-btn:hover {
+        background: #2980b9;
+    }
+
+    .add-to-cart-btn:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .product-main {
+            flex-direction: column;
+        }
+
+        .main-image-container {
+            min-height: 300px;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+        }
+
+        .modal-nav-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+    }
+</style>
+
 <div class="container mt-4">
     <!-- Хлебные крошки -->
     <nav aria-label="breadcrumb">
@@ -14,24 +324,56 @@
     </nav>
 
     <div class="row">
-        <!-- Изображение товара -->
+        <!-- Блок с галереей -->
         <div class="col-md-6">
-            <div class="card mb-4 border-0 shadow-sm">
-                {% if product.image %}
-                <img src="{{ product.get_main_image }}" class="card-img-top" alt="{{ product.name }}" style="max-height: 400px; object-fit: contain;">
-                {% else %}
-                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 400px;">
-                    <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
-                </div>
-                {% endif %}
-                <div class="card-body">
-                    <div class="row">
-                        {% for image in product.images.all %}
-                        <div class="col-3">
-                            <img src="{{ product.get_main_image }}" class="img-thumbnail" alt="{{ image.alt_text }}" style="height: 80px; object-fit: cover;">
-                        </div>
-                        {% endfor %}
+            <div class="product-images">
+                <div class="gallery">
+                    <!-- Основное изображение с кнопками навигации -->
+                    <div class="main-image-container">
+                        {% if product.get_main_image or product_images %}
+                            <img id="mainImage" src="{% if product.get_main_image %}{{ product.get_main_image }}{% elif product_images.0.get_image_url %}{{ product_images.0.get_image_url }}{% endif %}"
+                                 onclick="openModal()"
+                                 class="main-image"
+                                 alt="{{ product.name }}">
+                            <!-- Кнопки навигации -->
+                            <button class="nav-btn prev" onclick="prevImage()" id="prevBtn">‹</button>
+                            <button class="nav-btn next" onclick="nextImage()" id="nextBtn">›</button>
+
+                            <!-- Счетчик -->
+                            <div class="image-counter" id="imageCounter">
+                                {% if product.get_main_image or product_images %}1 / {{ product_images|length|add:"1" }}{% else %}0 / 0{% endif %}
+                            </div>
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-light" style="height: 400px;">
+                                <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                            </div>
+                        {% endif %}
                     </div>
+
+                    <!-- Миниатюры -->
+                    {% if product.get_main_image or product_images %}
+                        <div class="thumbnails" id="thumbnailsContainer">
+                            <!-- Основное изображение как миниатюра -->
+                            {% if product.get_main_image %}
+                            <img src="{{ product.get_main_image }}"
+                                 alt="{{ product.name }}"
+                                 class="thumbnail active"
+                                 data-index="0"
+                                 onclick="showImage(0, '{{ product.get_main_image }}', '{{ product.name }}')">
+                            {% endif %}
+
+                            <!-- Дополнительные изображения -->
+                            {% for image in product_images %}
+                                {% if image.get_image_url %}
+                                <img src="{{ image.get_image_url }}"
+                                     alt="{{ image.alt_text|default:product.name }}"
+                                     class="thumbnail {% if not product.get_main_image and forloop.first %}active{% endif %}"
+                                     data-index="{{ forloop.counter0|add:1 }}"
+                                     onclick="showImage({{ forloop.counter0|add:1 }}, '{{ image.get_image_url }}', '{{ image.alt_text|default:product.name }}')">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -39,11 +381,11 @@
         <!-- Информация о товаре -->
         <div class="col-md-6">
             <h1 class="mb-3">{{ product.name }}</h1>
-            
+
             {% if product.brand %}
             <p class="text-muted">Бренд: <strong>{{ product.brand }}</strong></p>
             {% endif %}
-            
+
             <div class="mb-3">
                 <span class="h2 text-primary">{{ product.price }} ₽</span>
                 <span class="text-muted">/ {{ product.get_unit_display }}</span>
@@ -72,7 +414,7 @@
                     Товар недоступен
                 </button>
                 {% endif %}
-                
+
                 <button class="btn btn-outline-secondary w-100">
                     <i class="bi bi-heart"></i> В избранное
                 </button>
@@ -135,6 +477,17 @@
         </div>
     </div>
 
+    <!-- Модальное окно для полноэкранного просмотра -->
+    <div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
+        <div class="modal-image-container" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <button class="modal-nav-btn prev" onclick="modalPrevImage(event)">‹</button>
+            <button class="modal-nav-btn next" onclick="modalNextImage(event)">›</button>
+            <div class="modal-counter" id="modalCounter"></div>
+        </div>
+    </div>
+
     <!-- Похожие товары -->
     {% if related_products %}
     <div class="row mt-5">
@@ -144,14 +497,14 @@
                 {% for related in related_products %}
                 <div class="col-md-3 mb-4">
                     <div class="card product-card border-0 shadow-sm h-100">
-                        {% if related.image %}
+                        {% if related.get_main_image %}
                         <img src="{{ related.get_main_image }}" class="card-img-top product-img" alt="{{ related.name }}" style="height: 150px; object-fit: cover;">
                         {% endif %}
                         <div class="card-body d-flex flex-column">
                             <h6 class="card-title">{{ related.name|truncatechars:40 }}</h6>
                             <div class="mt-auto">
                                 <p class="h6 text-primary">{{ related.price }} ₽</p>
-                                <a href="{{ related.get_main_image }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
+                                <a href="{{ related.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
                             </div>
                         </div>
                     </div>
@@ -162,4 +515,261 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+// Все изображения товара
+let images = [];
+let currentIndex = 0;
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Собираем все изображения товара из миниатюр
+    const thumbnails = document.querySelectorAll('.thumbnail');
+
+    // Очищаем массив изображений
+    images = [];
+
+    // Собираем все изображения из миниатюр
+    thumbnails.forEach((thumb, index) => {
+        if (thumb.src && !thumb.src.includes('undefined')) {
+            // Получаем индекс из data-атрибута
+            const dataIndex = thumb.getAttribute('data-index');
+            images[dataIndex] = {
+                src: thumb.src,
+                alt: thumb.alt,
+                index: dataIndex
+            };
+        }
+    });
+
+    // Удаляем пустые элементы (если есть пропуски)
+    images = images.filter(img => img !== undefined && img !== null);
+
+    console.log('Загружено изображений:', images.length, images);
+
+    // Если нет изображений, скрываем кнопки навигации
+    if (images.length <= 1) {
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+    }
+
+    // Обновляем счетчик
+    updateCounter();
+    updateNavButtons();
+});
+
+// Показать определенное изображение
+function showImage(index, src, alt) {
+    currentIndex = parseInt(index);
+    console.log('Показываем изображение:', currentIndex, src);
+
+    // Обновляем основное изображение
+    const mainImage = document.getElementById('mainImage');
+    if (mainImage) {
+        mainImage.src = src;
+        mainImage.alt = alt;
+    }
+
+    // Обновляем активную миниатюру
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+        // Проверяем совпадение по src или data-index
+        if (thumb.src === src || thumb.getAttribute('data-index') == currentIndex) {
+            thumb.classList.add('active');
+        }
+    });
+
+    // Обновляем счетчик и кнопки
+    updateCounter();
+    updateNavButtons();
+}
+
+// Следующее изображение
+function nextImage() {
+    if (currentIndex < images.length - 1) {
+        currentIndex++;
+        console.log('Следующее изображение:', currentIndex, images[currentIndex]);
+        if (images[currentIndex]) {
+            showImage(currentIndex, images[currentIndex].src, images[currentIndex].alt);
+        }
+    }
+}
+
+// Предыдущее изображение
+function prevImage() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        console.log('Предыдущее изображение:', currentIndex, images[currentIndex]);
+        if (images[currentIndex]) {
+            showImage(currentIndex, images[currentIndex].src, images[currentIndex].alt);
+        }
+    }
+}
+
+// Обновить счетчик
+function updateCounter() {
+    const counter = document.getElementById('imageCounter');
+    if (counter && images.length > 0) {
+        counter.textContent = `${currentIndex + 1} / ${images.length}`;
+    }
+}
+
+// Обновить состояние кнопок навигации
+function updateNavButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (prevBtn) {
+        prevBtn.disabled = currentIndex === 0;
+        prevBtn.style.display = images.length <= 1 ? 'none' : 'flex';
+    }
+    if (nextBtn) {
+        nextBtn.disabled = currentIndex === images.length - 1;
+        nextBtn.style.display = images.length <= 1 ? 'none' : 'flex';
+    }
+}
+
+// Открыть модальное окно
+function openModal() {
+    if (images.length === 0) return;
+
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCounter = document.getElementById('modalCounter');
+
+    if (images[currentIndex]) {
+        modalImage.src = images[currentIndex].src;
+        modalImage.alt = images[currentIndex].alt;
+        modalCounter.textContent = `${currentIndex + 1} / ${images.length}`;
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Блокируем скролл
+    }
+}
+
+// Закрыть модальное окно
+function closeModal(event) {
+    // Останавливаем всплытие события
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const modal = document.getElementById('imageModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Возвращаем скролл
+}
+
+// Навигация в модальном окне
+function modalNextImage(event) {
+    event.stopPropagation();
+    if (currentIndex < images.length - 1) {
+        currentIndex++;
+        updateModalImage();
+    }
+}
+
+function modalPrevImage(event) {
+    event.stopPropagation();
+    if (currentIndex > 0) {
+        currentIndex--;
+        updateModalImage();
+    }
+}
+
+// Обновить изображение в модальном окне
+function updateModalImage() {
+    const modalImage = document.getElementById('modalImage');
+    const modalCounter = document.getElementById('modalCounter');
+    const mainImage = document.getElementById('mainImage');
+
+    if (images[currentIndex]) {
+        modalImage.src = images[currentIndex].src;
+        modalImage.alt = images[currentIndex].alt;
+        modalCounter.textContent = `${currentIndex + 1} / ${images.length}`;
+
+        // Также обновляем основное изображение на странице
+        mainImage.src = images[currentIndex].src;
+        mainImage.alt = images[currentIndex].alt;
+
+        // Обновляем активную миниатюру
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.classList.remove('active');
+            if (thumb.src === images[currentIndex].src || thumb.getAttribute('data-index') == currentIndex) {
+                thumb.classList.add('active');
+            }
+        });
+
+        updateCounter();
+        updateNavButtons();
+    }
+}
+
+// Управление с клавиатуры
+document.addEventListener('keydown', function(event) {
+    const modal = document.getElementById('imageModal');
+
+    if (modal.style.display === 'flex') {
+        // В модальном окне
+        switch(event.key) {
+            case 'Escape':
+                closeModal();
+                break;
+            case 'ArrowLeft':
+                modalPrevImage({ stopPropagation: () => {} });
+                break;
+            case 'ArrowRight':
+                modalNextImage({ stopPropagation: () => {} });
+                break;
+        }
+    } else {
+        // На основной странице
+        switch(event.key) {
+            case 'ArrowLeft':
+                prevImage();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+            case ' ':
+                event.preventDefault(); // Предотвращаем прокрутку страницы
+            case 'Enter':
+                openModal();
+                break;
+        }
+    }
+});
+
+// Swipe для мобильных устройств
+let touchStartX = 0;
+let touchEndX = 0;
+
+const modal = document.getElementById('imageModal');
+if (modal) {
+    modal.addEventListener('touchstart', function(event) {
+        touchStartX = event.changedTouches[0].screenX;
+    }, { passive: true });
+
+    modal.addEventListener('touchend', function(event) {
+        touchEndX = event.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+}
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+
+    if (touchEndX < touchStartX - swipeThreshold) {
+        // Swipe влево - следующее изображение
+        modalNextImage({ stopPropagation: () => {} });
+    } else if (touchEndX > touchStartX + swipeThreshold) {
+        // Swipe вправо - предыдущее изображение
+        modalPrevImage({ stopPropagation: () => {} });
+    }
+}
+</script>
+
 {% endblock %}
+
+

@@ -49,12 +49,14 @@ def category_view(request, category_slug):
 
 def product_detail(request, product_slug):
     product = get_object_or_404(Product, slug=product_slug, available=True)
+    product_images = product.images.all()
     related_products = Product.objects.filter(
         category=product.category, available=True
     ).exclude(id=product.id)[:4]
 
     context = {
         'product': product,
+        'product_images': product_images,
         'related_products': related_products,
     }
     return render(request, 'store/product_detail.html', context)
