@@ -3,6 +3,7 @@
 {% block title %}{{ category.name }} - Строительный магазин{% endblock %}
 
 {% block content %}
+
 <div class="container mt-4">
     <!-- Заголовок категории -->
     <div class="row mb-4">
@@ -27,14 +28,19 @@
             <div class="col-md-3 mb-4">
                 <div class="card product-card border-0 shadow-sm h-100">
                     {% if product.image %}
+                    <a href="{{ product.get_absolute_url }}" class="product-image-link">
                     <img src="{{ product.get_main_image }}" class="card-img-top product-img" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+
                     {% else %}
                     <div class="card-img-top product-img d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
                         <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
                     </div>
                     {% endif %}
+                    </a>
                     <div class="card-body d-flex flex-column">
+                        <a href="{{ product.get_absolute_url }}" class="product-title-link">
                         <h5 class="card-title">{{ product.name }}</h5>
+                        </a>
                         {% if product.brand %}
                         <p class="card-text"><small class="text-muted">Бренд: {{ product.brand }}</small></p>
                         {% endif %}

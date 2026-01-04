@@ -9,6 +9,103 @@
 
     <style>
         {%block style_store%}
+        .product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для ссылки с картинкой */
+.product-image-link {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+}
+
+.product-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+/* Эффект увеличения при наведении на карточку */
+.product-card:hover .product-img {
+    transform: scale(1.05);
+}
+
+/* Эффект для изображения при наведении непосредственно на него */
+.product-img:hover {
+    transform: scale(1.08) !important;
+}
+
+/* Стили для названия товара */
+.product-title-link {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.product-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    line-height: 1.4;
+}
+
+/* Эффект при наведении на название */
+.product-title-link:hover .product-title {
+    font-weight: 700;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* Эффект при наведении на всю карточку */
+.product-card:hover .product-title {
+    font-weight: 600;
+}
+
+/* Плейсхолдер для картинки */
+.no-image-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.no-image-placeholder i {
+    font-size: 3rem;
+}
+
+/* Кнопка "Подробнее" */
+.product-card .btn {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .btn {
+    background-color: #007bff;
+    color: white;
+}
+
+
+    .product-title {
+        font-size: 0.9rem;
+    }
+
         .navbar-brand {
             font-weight: bold;
             color: #ff6b35 !important;
@@ -162,12 +259,23 @@
             background-color: #ff6b35;
             transition: width 0.3s ease;
         }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .product-img {
+        height: 150px;
+    }
+
+    .no-image-placeholder {
+        height: 150px;
+    }
         {%endblock%}
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+
     <!-- Навигация -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
@@ -242,9 +350,10 @@
         </div>
         </div>
     </nav>
-    {% block compact_navigation_category%}
+
      <!-- Компактная навигация категорий -->
     <div class="categories-nav-container">
+        {% block compact_navigation_category%}
         <div class="container">
             <div class="categories-nav-wrapper">
                 <!-- Кнопка прокрутки влево -->
@@ -273,8 +382,9 @@
                 <div class="scroll-indicator" id="scrollIndicator"></div>
             </div>
         </div>
+        {%endblock%}
     </div>
-    {%endblock%}
+
     <!-- Сообщения -->
     {% if messages %}
     <div class="container mt-3">
@@ -290,6 +400,7 @@
     <!-- Основной контент -->
     <main class="container mt-4">
         {% block content %}{% endblock %}
+
     </main>
 
     <!-- Футер -->

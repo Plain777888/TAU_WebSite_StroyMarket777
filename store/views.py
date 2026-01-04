@@ -33,6 +33,7 @@ def index(request):
 
 def category_view(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
+    categories = Category.objects.all()
     products = Product.objects.filter(category=category, available=True)
 
     # Пагинация
@@ -43,6 +44,7 @@ def category_view(request, category_slug):
     context = {
         'category': category,
         'products': page_obj,
+        'categories': categories,
     }
     return render(request, 'store/category.html', context)
 
@@ -50,6 +52,7 @@ def category_view(request, category_slug):
 def product_detail(request, product_slug):
     product = get_object_or_404(Product, slug=product_slug, available=True)
     product_images = product.images.all()
+    categories = Category.objects.all()
     related_products = Product.objects.filter(
         category=product.category, available=True
     ).exclude(id=product.id)[:4]
@@ -58,6 +61,7 @@ def product_detail(request, product_slug):
         'product': product,
         'product_images': product_images,
         'related_products': related_products,
+        'categories': categories,
     }
     return render(request, 'store/product_detail.html', context)
 
