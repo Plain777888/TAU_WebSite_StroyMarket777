@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О нас - СтройМаркет 777</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --gray-color: #95a5a6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Шапка */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            color: var(--accent-color);
+            font-size: 2.2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        .back-to-site {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-to-site:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        /* Основной контент */
+        main {
+            padding: 40px 0;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: var(--gray-color);
+            font-size: 1.1rem;
+        }
+
+        /* О компании */
+        .about-hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .about-hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .about-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Блоки с информацией */
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        /* История компании */
+        .history-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 50px;
+            box-shadow: var(--shadow);
+            margin-bottom: 50px;
+        }
+
+        .history-section h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--accent-color);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            width: 50%;
+            padding: 0 40px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-content {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+
+        .timeline-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .timeline-year {
+            position: absolute;
+            top: -15px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-year {
+            right: -60px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-year {
+            left: -60px;
+        }
+
+        /* Наша команда */
+        .team-section {
+            margin-bottom: 50px;
+        }
+
+        .team-section h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-member {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .team-member h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .team-member .position {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* Контакты */
+        .contacts-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 50px;
+            box-shadow: var(--shadow);
+            margin-bottom: 50px;
+        }
+
+        .contacts-section h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .contact-item i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .contact-item h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Ценности */
+        .values-section {
+            margin-bottom: 50px;
+        }
+
+        .values-section h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .value-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .value-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .value-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        /* Подвал */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .footer-logo span {
+            color: var(--accent-color);
+        }
+
+        .footer-info {
+            text-align: right;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 70px;
+                padding-right: 0;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-year,
+            .timeline-item:nth-child(even) .timeline-year {
+                left: -10px;
+                right: auto;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-info {
+                text-align: center;
+            }
+
+            .about-hero {
+                padding: 50px 20px;
+            }
+
+            .about-hero h2 {
+                font-size: 2rem;
+            }
+
+            .history-section,
+            .contacts-section {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-home"></i>
+                <h1>Строй<span>Мастер</span></h1>
+            </div>
+            <a href="{% url 'store:index' %}" class="back-to-site">
+                <i class="fas fa-arrow-left"></i> Вернуться на сайт
+            </a>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="container">
+        <div class="page-title">
+            <h1>О нашей компании</h1>
+            <p>Узнайте больше о СтройМастер - вашем надежном партнере в строительстве и ремонте</p>
+        </div>
+
+        <!-- Герой-секция -->
+        <section class="about-hero">
+            <h2>СтройМастер – 15 лет на рынке строительных материалов</h2>
+            <p>Мы являемся ведущим поставщиком строительных материалов, инструментов и оборудования в Москве и Московской области. Наша миссия – сделать ремонт и строительство доступными, качественными и удобными для каждого.</p>
+        </section>
+
+        <!-- Основная информация -->
+        <section class="info-section">
+            <div class="info-card">
+                <i class="fas fa-bullseye"></i>
+                <h3>Наша миссия</h3>
+                <p>Предоставлять нашим клиентам лучшие строительные материалы по доступным ценам, обеспечивая высокий уровень сервиса и профессиональные консультации.</p>
+            </div>
+
+            <div class="info-card">
+                <i class="fas fa-eye"></i>
+                <h3>Наше видение</h3>
+                <p>Стать самым надежным и технологичным строительным гипермаркетом в России, предлагая инновационные решения для строительства и ремонта.</p>
+            </div>
+
+            <div class="info-card">
+                <i class="fas fa-handshake"></i>
+                <h3>Наши ценности</h3>
+                <p>Качество, надежность, честность и забота о клиентах – это основа нашей работы. Мы ценим долгосрочные отношения с партнерами.</p>
+            </div>
+        </section>
+
+        <!-- История компании -->
+        <section class="history-section">
+            <h2>История компании</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2008</div>
+                    <div class="timeline-content">
+                        <h3>Основание компании</h3>
+                        <p>Открытие первого магазина строительных материалов в Москве. Начало с небольшого ассортимента основных строительных товаров.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2012</div>
+                    <div class="timeline-content">
+                        <h3>Расширение ассортимента</h3>
+                        <p>Запуск интернет-магазина и расширение ассортимента до 5000 товаров. Начало сотрудничества с ведущими мировыми производителями.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2015</div>
+                    <div class="timeline-content">
+                        <h3>Открытие гипермаркета</h3>
+                        <p>Открытие первого строительного гипермаркета площадью 5000 м². Введение услуг доставки и профессиональных консультаций.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2020</div>
+                    <div class="timeline-content">
+                        <h3>Цифровизация и инновации</h3>
+                        <p>Внедрение современных технологий: мобильное приложение, онлайн-консультации, 3D-планирование помещений и виртуальные туры по магазину.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2026</div>
+                    <div class="timeline-content">
+                        <h3>Национальная сеть</h3>
+                        <p>СтройМастер становится национальной сетью с 15 филиалами по всей России. Ассортимент превышает 50 000 товаров.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ценности компании -->
+        <section class="values-section">
+            <h2>Наши ценности</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fas fa-award"></i>
+                    <h3>Качество</h3>
+                    <p>Мы тщательно отбираем поставщиков и проводим контроль качества каждого товара.</p>
+                </div>
+
+                <div class="value-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Надежность</h3>
+                    <p>Гарантия на все товары, официальные поставки и соблюдение сроков доставки.</p>
+                </div>
+
+                <div class="value-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Клиентоориентированность</h3>
+                    <p>Индивидуальный подход к каждому клиенту, гибкие условия и профессиональные консультации.</p>
+                </div>
+
+                <div class="value-card">
+                    <i class="fas fa-leaf"></i>
+                    <h3>Экологичность</h3>
+                    <p>Продвижение экологичных материалов и технологий в строительстве.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Наша команда -->
+        <section class="team-section">
+            <h2>Руководство компании</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-avatar">ИП</div>
+                    <h3>Иван Петров</h3>
+                    <div class="position">Генеральный директор</div>
+                    <p>Основатель компании, 20 лет опыта в строительной отрасли.</p>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">АС</div>
+                    <h3>Анна Сидорова</h3>
+                    <div class="position">Директор по закупкам</div>
+                    <p>Отвечает за формирование ассортимента и отношения с поставщиками.</p>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">МК</div>
+                    <h3>Михаил Козлов</h3>
+                    <div class="position">Технический директор</div>
+                    <p>Эксперт в строительных технологиях и материалах.</p>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">ОВ</div>
+                    <h3>Ольга Васильева</h3>
+                    <div class="position">Директор по развитию</div>
+                    <p>Управляет открытием новых филиалов и развитием сети.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Контакты -->
+        <section class="contacts-section">
+            <h2>Контакты</h2>
+            <div class="contacts-grid">
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Адрес главного офиса</h3>
+                    <p>г. Москва, ул. Строителей, 15</p>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <h3>Телефон</h3>
+                    <p>+7 (999) 123-45-67</p>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <p>info@stroymaster.ru</p>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <h3>Часы работы</h3>
+                    <p>Пн-Пт: 9:00-20:00<br>Сб-Вс: 10:00-18:00</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-logo">Строй<span>Мастер</span></div>
+            <div class="footer-info">
+                <p>© 2026 СтройМастер. Все права защищены.</p>
+                <p>Строим будущее вместе с вами!</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

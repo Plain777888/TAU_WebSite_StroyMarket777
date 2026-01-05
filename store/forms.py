@@ -8,13 +8,14 @@ from django.contrib.auth.models import User
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'note']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'delivery_address', 'note','delivery_type']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'delivery_type': forms.Select(attrs={'class': 'form-control'}),
+            'delivery_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
         labels = {
@@ -22,7 +23,8 @@ class OrderForm(forms.ModelForm):
             'last_name': 'Фамилия',
             'email': 'Email',
             'phone': 'Телефон',
-            'address': 'Адрес доставки',
+            'delivery_address': 'Адрес доставки',
+            'delivery_type': '<Курьер> <Самовывоз>',
             'note': 'Примечание к заказу',
         }
 
@@ -123,16 +125,16 @@ class UserProfileForm(forms.ModelForm):
             'avatar': 'Аватар',
         }
 
-
-class OrderForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'note']
-        widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }
+#
+# class OrderForm(forms.ModelForm):
+#     class Meta:
+#         model = Order
+#         fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'note']
+#         widgets = {
+#             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+#             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+#             'email': forms.EmailInput(attrs={'class': 'form-control'}),
+#             'phone': forms.TextInput(attrs={'class': 'form-control'}),
+#             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+#             'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+#         }

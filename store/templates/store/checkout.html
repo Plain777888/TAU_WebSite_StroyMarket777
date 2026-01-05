@@ -3,7 +3,7 @@
 {% block title %}Оформление заказа - Строительный магазин{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4" xmlns="http://www.w3.org/1999/html">
     <h1 class="mb-4">Оформление заказа</h1>
 
     <div class="row">
@@ -19,30 +19,151 @@
                         {% csrf_token %}
                         
                         <div class="mb-3">
-                            <label for="first_name" class="form-label">Имя *</label>
+                            <label for="first_name" class="form-label">Имя * (обязательно для заполнения)</label>
                             <input type="text" class="form-control" id="first_name" name="first_name" required>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="last_name" class="form-label">Фамилия *</label>
+                            <label for="last_name" class="form-label">Фамилия * (обязательно для заполнения)</label>
                             <input type="text" class="form-control" id="last_name" name="last_name" required>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email *</label>
+                            <label for="email" class="form-label">Email * (обязательно для заполнения)</label>
                             <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Телефон *</label>
+                            <label for="phone" class="form-label">Телефон * (обязательно для заполнения)</label>
                             <input type="tel" class="form-control" id="phone" name="phone" required placeholder="+7 (999) 123-45-67">
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Адрес доставки *</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        <!-- Блок способа получения -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Способ получения</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check delivery-option">
+                                    <input class="form-check-input" type="radio" name="delivery_type"
+                                           id="delivery_courier" value="courier" checked>
+                                    <label class="form-check-label" for="delivery_courier">
+                                        <strong>Доставка курьером</strong>
+                                        <p class="text-muted small mb-0">Доставка по городу в течение 2-3 часов</p>
+                                        <span class="text-primary">+ 300 ₽</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check delivery-option">
+                                    <input class="form-check-input" type="radio" name="delivery_type"
+                                           id="delivery_pickup" value="pickup">
+                                    <label class="form-check-label" for="delivery_pickup">
+                                        <strong>Самовывоз</strong>
+                                        <p class="text-muted small mb-0">Заберите заказ из нашего магазина</p>
+                                        <span class="text-success">Бесплатно</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                        
+
+                        <!-- Блок адреса доставки (появляется при выборе доставки) -->
+                        <div id="addressBlock" class="mt-4">
+                            <h6 class="mb-3">Адрес доставки</h6>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="address_street" class="form-label">Улица, дом *</label>
+                                    <input type="text" class="form-control" id="address_street"
+                                           name="address_street" placeholder="ул. Ленина, д. 10, кв. 5">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="address_apartment" class="form-label">Квартира/офис</label>
+                                    <input type="text" class="form-control" id="address_apartment"
+                                           name="address_apartment" placeholder="25">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="address_entrance" class="form-label">Подъезд</label>
+                                    <input type="text" class="form-control" id="address_entrance"
+                                           name="address_entrance">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="address_floor" class="form-label">Этаж</label>
+                                    <input type="text" class="form-control" id="address_floor"
+                                           name="address_floor">
+                                </div></div></div>
+                                <!-- Блок пункта самовывоза (появляется при выборе самовывоза) -->
+                        <div id="pickupBlock" class="mt-4" style="display: none;">
+                            <h6 class="mb-3">Пункт самовывоза</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="pickup_point"
+                                       id="pickup_1" value="1" checked>
+                                <label class="form-check-label" for="pickup_1">
+                                    <strong>Магазин на Ленина</strong><br>
+                                    <small class="text-muted">ул. Ленина, 10, ежедневно 9:00-21:00</small>
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="radio" name="pickup_point"
+                                       id="pickup_2" value="2">
+                                <label class="form-check-label" for="pickup_2">
+                                    <strong>Склад на Промышленной</strong><br>
+                                    <small class="text-muted">ул. Промышленная, 25, пн-пт 10:00-19:00</small>
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="radio" name="pickup_point"
+                                       id="pickup_3" value="3">
+                                <label class="form-check-label" for="pickup_3">
+                                    <strong>ТЦ "Строймаркет"</strong><br>
+                                    <small class="text-muted">пр. Строителей, 15, 3 этаж</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок оплаты -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Способ оплаты</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment_type"
+                                   id="payment_cash" value="cash" checked>
+                            <label class="form-check-label" for="payment_cash">
+                                <strong>Наличными при получении</strong>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment_type"
+                                   id="payment_card" value="card">
+                            <label class="form-check-label" for="payment_card">
+                                <strong>Банковской картой онлайн</strong>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_type"
+                                   id="payment_card_courier" value="card_courier">
+                            <label class="form-check-label" for="payment_card_courier">
+                                <strong>Картой курьеру</strong>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+<!--                        <div><label>Выберите способ получения заказа:<br></label><br>-->
+<!--                            <label><input class="masldamdlkam" type="radio" name="Sposob_dostavki" checked>&nbsp;-&nbsp;Доставка курьером до адреса</label><br>-->
+<!--                            {%if checked%}-->
+<!--                            <div class="mb-3">-->
+<!--                            <label for="address" class="form-label">Адрес доставки * (обязательно для заполнения)</label>-->
+<!--                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>-->
+<!--                        </div>{%endif%}-->
+<!--                            <label><input  type="radio" name="Sposob_dostavki">&nbsp;-&nbsp;Самовывоз</label><br><br>-->
+<!--                        </div>-->
+
                         <div class="mb-3">
                             <label for="note" class="form-label">Примечание к заказу</label>
                             <textarea class="form-control" id="note" name="note" rows="3"></textarea>
@@ -106,4 +227,149 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deliveryCourier = document.getElementById('delivery_courier');
+    const deliveryPickup = document.getElementById('delivery_pickup');
+    const addressBlock = document.getElementById('addressBlock');
+    const pickupBlock = document.getElementById('pickupBlock');
+    const deliveryCost = document.getElementById('deliveryCost');
+    const totalPrice = document.getElementById('totalPrice');
+    const subtotal = parseFloat({{ cart.total_price }});
+
+    // Функция обновления стоимости
+    function updatePrice() {
+        let deliveryPrice = 0;
+
+        if (deliveryCourier.checked) {
+            deliveryPrice = 300;
+            deliveryCost.textContent = '300 ₽';
+        } else {
+            deliveryCost.textContent = 'Бесплатно';
+        }
+
+        const total = subtotal + deliveryPrice;
+        totalPrice.textContent = total.toFixed(0) + ' ₽';
+    }
+
+    // Функция переключения блоков
+    function toggleDeliveryBlocks() {
+        if (deliveryCourier.checked) {
+            // Показываем адрес доставки
+            addressBlock.style.display = 'block';
+            // Делаем поля адреса обязательными
+            document.getElementById('address_street').required = true;
+
+            // Скрываем пункт самовывоза
+            pickupBlock.style.display = 'none';
+            // Делаем выбор пункта необязательным
+            document.querySelectorAll('input[name="pickup_point"]').forEach(el => {
+                el.required = false;
+            });
+        } else {
+            // Скрываем адрес доставки
+            addressBlock.style.display = 'none';
+            // Делаем поля адреса необязательными
+            document.getElementById('address_street').required = false;
+
+            // Показываем пункт самовывоза
+            pickupBlock.style.display = 'block';
+            // Делаем выбор пункта обязательным
+            document.querySelectorAll('input[name="pickup_point"]').forEach(el => {
+                el.required = true;
+            });
+        }
+
+        updatePrice();
+    }
+
+    // Обработчики событий для radio кнопок
+    deliveryCourier.addEventListener('change', toggleDeliveryBlocks);
+    deliveryPickup.addEventListener('change', toggleDeliveryBlocks);
+
+    // Инициализация при загрузке
+    toggleDeliveryBlocks();
+
+    // Добавляем валидацию формы
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Проверка телефона
+        const phone = document.getElementById('phone').value;
+        const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
+
+        if (!phoneRegex.test(phone)) {
+            alert('Пожалуйста, введите корректный номер телефона');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    // Маска для телефона
+    document.getElementById('phone').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.startsWith('7') || value.startsWith('8')) {
+            value = '+7' + value.substring(1);
+        } else if (!value.startsWith('+7')) {
+            value = '+7' + value;
+        }
+
+        // Форматирование: +7 (999) 999-99-99
+        if (value.length > 2) value = value.substring(0, 2) + ' (' + value.substring(2);
+        if (value.length > 7) value = value.substring(0, 7) + ') ' + value.substring(7);
+        if (value.length > 12) value = value.substring(0, 12) + '-' + value.substring(12);
+        if (value.length > 15) value = value.substring(0, 15) + '-' + value.substring(15);
+
+        e.target.value = value;
+    });
+});
+</script>
+
+<style>
+.delivery-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delivery-option:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.delivery-option .form-check-input {
+    margin-top: 0.3rem;
+}
+
+.delivery-option label {
+    cursor: pointer;
+    width: 100%;
+}
+
+.form-check-input:checked ~ label {
+    color: #007bff;
+}
+
+.delivery-option.active {
+    border-color: #007bff;
+    background-color: #e7f3ff;
+}
+
+/* Анимация появления блоков */
+#addressBlock, #pickupBlock {
+    transition: opacity 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+</style>
 {% endblock %}

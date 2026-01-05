@@ -17,6 +17,13 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('product/<slug:slug>/', views.product_detail, name='product_detail'),
 
+    path('otzov/', views.otzov, name='otzov'),
+    path('api/add-review/', views.add_review, name='add_review'),
+    path('api/get-reviews/', views.get_reviews, name='get_reviews'),
+
+    path('about/', views.about, name='about'),
+    path('otzov/', views.otzov, name='otzov'),
+
     path('test-image/', views.test_image_url, name='test_image'),
 
     # Аутентификация

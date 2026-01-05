@@ -173,12 +173,38 @@ class Order(models.Model):
         ('delivered', 'Доставлен'),
         ('cancelled', 'Отменен'),
     ]
+    DELIVERY_CHOICES = [
+        ('courier', 'Доставка курьером'),
+        ('pickup', 'Самовывоз'),
+    ]
+
+    PAYMENT_CHOICES = [
+        ('cash', 'Наличными при получении'),
+        ('card', 'Банковской картой онлайн'),
+        ('card_courier', 'Картой курьеру'),
+    ]
+
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    # order_number = models.CharField(max_length=20, unique=True)
 
     first_name = models.CharField(max_length=50, verbose_name='Имя')
     last_name = models.CharField(max_length=50, verbose_name='Фамилия')
     email = models.EmailField(verbose_name='Email')
     phone = models.CharField(max_length=20, verbose_name='Телефон')
-    address = models.TextField(verbose_name='Адрес доставки')
+    # Доставка
+    delivery_type = models.CharField(max_length=20, choices=DELIVERY_CHOICES)
+    delivery_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivery_address = models.TextField(blank=True, null=True)
+    delivery_comment = models.TextField(blank=True, null=True)
+
+    # Самовывоз
+    pickup_point = models.CharField(max_length=255, blank=True, null=True)
+    pickup_date = models.DateField(blank=True, null=True)
+    pickup_time = models.TimeField(blank=True, null=True)
+
+    # Оплата
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
+
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES,
@@ -195,6 +221,21 @@ class Order(models.Model):
 
     def get_total_cost(self):
         return sum(item.get_cost() for item in self.items.all())
+
+    # def save(self, *args, **kwargs):
+    #     if not self.order_number:
+    #         import random
+    #         import string
+    #         self.order_number = f"ORD{''.join(random.choices(string.digits, k=8))}"
+    #     super().save(*args, **kwargs)
+
+    def get_full_address(self):
+        """Возвращает полный адрес для отображения"""
+        if self.delivery_type == 'courier' and self.delivery_address:
+            return self.delivery_address
+        elif self.delivery_type == 'pickup' and self.pickup_point:
+            return f"Самовывоз: {self.pickup_point}"
+        return "Адрес не указан"
 
 
 class OrderItem(models.Model):
