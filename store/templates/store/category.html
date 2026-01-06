@@ -3,7 +3,185 @@
 {% block title %}{{ category.name }} - Строительный магазин{% endblock %}
 
 {% block content %}
+<style>.promotion-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
+.promotion-badge .discount-percent {
+    font-size: 1.2em;
+    display: block;
+    text-align: center;
+}
+
+.promotion-badge .promotion-label {
+    font-size: 0.8em;
+    display: block;
+    text-align: center;
+    opacity: 0.9;
+}
+
+.price-container {
+    margin: 10px 0;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #95a5a6;
+    font-size: 0.9em;
+}
+
+.new-price {
+    color: #e74c3c;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.savings {
+    color: #27ae60;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.promotion-timer {
+    position:absolute;
+    background: linear-gradient(45deg, rgba(0, 255, 42,.3), rgba(0, 255, 42,.3),rgba(0, 255, 42,.3));
+    color: black;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-top:-35px;
+    margin-left:41px;
+    font-size: 12px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.promotion-timer .timer {
+    font-weight: bold;
+    color: red;
+}
+
+/* Страница со списком акций */
+.promotions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.promotion-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.promotion-card:hover {
+    transform: translateY(-5px);
+}
+
+.promotion-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.promotion-content {
+    padding: 20px;
+}
+
+.promotion-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.promotion-description {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+.promotion-dates {
+    font-size: 0.9em;
+    color: #95a5a6;
+    margin-bottom: 10px;
+}
+
+.promotion-type {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+}
+
+.promotion-type.percentage {
+    background-color: #e74c3c;
+}
+
+.promotion-type.fixed {
+    background-color: #2ecc71;
+}
+</style>
+<script>document.addEventListener('DOMContentLoaded', function() {
+    // Таймер для акций
+    const timers = document.querySelectorAll('.promotion-timer');
+
+    timers.forEach(timer => {
+        const endDate = new Date(timer.dataset.end);
+
+        function updateTimer() {
+            const now = new Date();
+            const timeLeft = endDate - now;
+
+            if (timeLeft <= 0) {
+                timer.innerHTML = 'Акция завершена';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            timer.querySelector('.timer').textContent =
+                `${days}д ${hours}ч ${minutes}м ${seconds}с`;
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    });
+
+    // Фильтрация товаров по акциям
+    const promotionFilter = document.getElementById('promotion-filter');
+    if (promotionFilter) {
+        promotionFilter.addEventListener('change', function() {
+            const selectedPromotion = this.value;
+            const productCards = document.querySelectorAll('.product-card');
+
+            productCards.forEach(card => {
+                if (selectedPromotion === 'all' ||
+                    card.dataset.promotion === selectedPromotion) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
 <div class="container mt-4">
     <!-- Заголовок категории -->
     <div class="row mb-4">
@@ -29,8 +207,20 @@
                 <div class="card product-card border-0 shadow-sm h-100">
                     {% if product.image %}
                     <a href="{{ product.get_absolute_url }}" class="product-image-link">
+
                     <img src="{{ product.get_main_image }}" class="card-img-top product-img" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
 
+    {% if product.has_promotion %}
+    <div class="promotion-badge">
+        <span class="discount-percent">-{{ product.discount_percentage }}%</span>
+        <span class="promotion-label">Акция</span>
+    </div>
+    {% endif %}
+                        {% if product.has_promotion and product.current_promotion.end_date %}
+    <div class="promotion-timer" data-end="{{ product.current_promotion.end_date|date:'c' }}">
+        До конца акции: <span class="timer"></span>
+    </div>
+    {% endif %}
                     {% else %}
                     <div class="card-img-top product-img d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
                         <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
@@ -46,8 +236,18 @@
                         {% endif %}
                         <p class="card-text text-muted">{{ product.description|truncatechars:80 }}</p>
                         <div class="mt-auto">
-                            <p class="h5 text-primary">{{ product.price }} ₽</p>
-                            <p class="text-muted">/ {{ product.get_unit_display }}</p>
+                            <div class="price-container">
+        {% if product.has_promotion %}
+        <div class="old-price">{{ product.price }} ₽</div>
+        <div class="new-price">{{ product.promotion_price}} ₽<span class="text-muted">/ {{ product.get_unit_display }}</span></div>
+        <div class="savings">Экономия {{ product.discount_amount }} ₽</div>
+        {% else %}
+        <p class="h5 text-primary">{{ product.price }} ₽<span class="text-muted">/ {{ product.get_unit_display }}</span></p>
+
+        {% endif %}
+    </div>
+
+
                             <div class="d-grid gap-2">
                                 <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary">Подробнее</a>
                                 <a href="{% url 'store:add_to_cart' product.id %}" class="btn btn-primary">

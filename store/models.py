@@ -57,11 +57,20 @@ class Product(models.Model):
     category = models.ForeignKey(Category, related_name='products',
                                  on_delete=models.CASCADE, verbose_name='Категория')
     name = models.CharField(max_length=200, verbose_name='Название товара')
-    slug = models.SlugField(max_length=200, unique=True)
+    #slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, verbose_name="URL")
     brand = models.CharField(max_length=100, blank=True, verbose_name='Бренд')
     description = models.TextField(verbose_name='Описание')
     price = models.DecimalField(max_digits=10, decimal_places=2,
                                 validators=[MinValueValidator(0)], verbose_name='Цена')
+    old_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        verbose_name="Старая цена",
+        help_text="Автоматически заполняется при наличии акции"
+    )
     unit = models.CharField(max_length=10, choices=UNIT_CHOICES,
                             default='шт', verbose_name='Единица измерения')
     stock = models.PositiveIntegerField(verbose_name='Количество на складе')
@@ -112,6 +121,128 @@ class Product(models.Model):
         elif self.image_url:  # Внешний URL
             return self.image_url
         return None
+
+    @property
+    def has_promotion(self):
+        """Проверка, есть ли у товара активная акция"""
+        try:
+            return self.product_promotions.filter(
+                promotion__is_active=True,
+                promotion__start_date__isnull=False,
+                promotion__end_date__isnull=False
+            ).filter(
+                models.Q(promotion__start_date__lte=timezone.now()) &
+                models.Q(promotion__end_date__gte=timezone.now())
+            ).exists()
+        except:
+            return False
+
+    @property
+    def current_promotion(self):
+        """Получить текущую акцию для товара"""
+        try:
+            product_promotion = self.product_promotions.filter(
+                promotion__is_active=True,
+                promotion__start_date__isnull=False,
+                promotion__end_date__isnull=False
+            ).filter(
+                models.Q(promotion__start_date__lte=timezone.now()) &
+                models.Q(promotion__end_date__gte=timezone.now())
+            ).order_by('-priority').first()
+
+            return product_promotion.promotion if product_promotion else None
+        except Exception as e:
+            print(f"Error getting current promotion: {e}")
+            return None
+
+    @property
+    def discount_percentage(self):
+        """Получить процент скидки"""
+        promotion = self.current_promotion
+        if not promotion or not self.price:
+            return 0
+
+        try:
+            if promotion.discount_type == 'percentage':
+                return float(promotion.discount_value)
+            elif promotion.discount_type in ['fixed', 'special_price']:
+                discount = promotion.calculate_discount(float(self.price))
+                if float(self.price) > 0:
+                    return round((discount / float(self.price)) * 100, 1)
+        except:
+            pass
+        return 0
+
+    @property
+    def discount_amount(self):
+        """Получить сумму скидки"""
+        promotion = self.current_promotion
+        if not promotion or not self.price:
+            return 0
+        try:
+            return promotion.calculate_discount(float(self.price))
+        except:
+            return 0
+
+    @property
+    def sale_price(self):
+        """Получить цену со скидкой"""
+        if not self.has_promotion:
+            return self.price
+
+        promotion = self.current_promotion
+        if not promotion:
+            return self.price
+
+        try:
+            discount = promotion.calculate_discount(float(self.price))
+            sale_price = float(self.price) - discount
+            return round(max(sale_price, 0), 2)  # Цена не может быть отрицательной
+        except:
+            return self.price
+
+    @property
+    def is_new(self):
+        """Проверка, новый ли товар (до 7 дней)"""
+        try:
+            days_since_creation = (timezone.now() - self.created_at).days
+            return days_since_creation <= 7
+        except:
+            return False
+
+    def save(self, *args, **kwargs):
+        """Переопределяем save для автоматической генерации slug и old_price"""
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+
+        # Сохраняем старую цену при наличии акции
+        if self.has_promotion and not self.old_price:
+            self.old_price = self.price
+
+        super().save(*args, **kwargs)
+
+    @property
+    def promotion_price(self):
+        """Получить цену со скидкой"""
+        if not self.has_promotion:
+            return self.price
+
+        try:
+            promotion = self.current_promotion
+            if not promotion:
+                return self.price
+
+            discount = promotion.calculate_discount(float(self.price))
+            sale_price = float(self.price) - discount
+            result = round(max(sale_price, 0), 2)  # Цена не может быть отрицательной
+
+            # Форматируем как Decimal для Django
+            from decimal import Decimal
+            return Decimal(str(result))
+        except Exception as e:
+            print(f"Ошибка расчета скидки: {e}")
+            return self.price
 
 
 class ProductImage(models.Model):
@@ -271,6 +402,223 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"Профиль {self.user.username}"
+
+
+from django.db import models
+from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import datetime
+
+
+class Promotion(models.Model):
+    """Модель акции/распродажи"""
+    DISCOUNT_TYPES = [
+        ('percentage', 'Процентная скидка'),
+        ('fixed', 'Фиксированная сумма'),
+        ('buy_one_get_one', '1+1=1'),
+        ('special_price', 'Специальная цена'),
+    ]
+
+    name = models.CharField(max_length=200, verbose_name="Название акции")
+    slug = models.SlugField(max_length=200, unique=True, verbose_name="URL")
+    description = models.TextField(verbose_name="Описание акции")
+    short_description = models.CharField(max_length=300, blank=True, verbose_name="Краткое описание")
+    discount_type = models.CharField(
+        max_length=20,
+        choices=DISCOUNT_TYPES,
+        default='percentage',
+        verbose_name="Тип скидки"
+    )
+    discount_value = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Значение скидки"
+    )
+    start_date = models.DateTimeField(
+        verbose_name="Дата начала",
+        null=True,  # Разрешаем null
+        blank=True  # Разрешаем пустое поле в форме
+    )
+    end_date = models.DateTimeField(
+        verbose_name="Дата окончания",
+        null=True,  # Разрешаем null
+        blank=True  # Разрешаем пустое поле в форме
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Активна")
+    image = models.ImageField(upload_to='promotions/', blank=True, null=True, verbose_name="Изображение")
+    banner_image = models.ImageField(upload_to='promotions/banners/', blank=True, null=True, verbose_name="Баннер")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+
+    class Meta:
+        verbose_name = "Акция"
+        verbose_name_plural = "Акции"
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def is_current(self):
+        """Проверка, действует ли акция сейчас"""
+        now = timezone.now()
+
+        # Проверяем, что даты не None
+        if self.start_date is None or self.end_date is None:
+            return False
+
+        # Проверяем активность
+        if not self.is_active:
+            return False
+
+        # Проверяем временные рамки
+        return self.start_date <= now <= self.end_date
+
+    @property
+    def is_upcoming(self):
+        """Проверка, будет ли акция в будущем"""
+        now = timezone.now()
+
+        if self.start_date is None or self.end_date is None:
+            return False
+
+        if not self.is_active:
+            return False
+
+        return self.start_date > now
+
+    @property
+    def is_expired(self):
+        """Проверка, закончилась ли акция"""
+        now = timezone.now()
+
+        if self.start_date is None or self.end_date is None:
+            return False
+
+        if not self.is_active:
+            return False
+
+        return self.end_date < now
+
+    @property
+    def days_left(self):
+        """Сколько дней осталось до конца акции"""
+        if not self.is_current or self.end_date is None:
+            return 0
+
+        delta = self.end_date - timezone.now()
+        return max(delta.days, 0)
+
+    @property
+    def time_left_display(self):
+        """Отображение оставшегося времени"""
+        if not self.is_current or self.end_date is None:
+            return "Не активна"
+
+        delta = self.end_date - timezone.now()
+        days = delta.days
+        hours = delta.seconds // 3600
+        minutes = (delta.seconds % 3600) // 60
+
+        if days > 0:
+            return f"{days} д. {hours} ч."
+        elif hours > 0:
+            return f"{hours} ч. {minutes} м."
+        else:
+            return f"{minutes} м."
+
+    def calculate_discount(self, price):
+        """Расчет скидки на основе типа акции"""
+        if price is None or price <= 0:
+            return 0
+
+        price = float(price)
+        discount_value = float(self.discount_value)
+
+        if self.discount_type == 'percentage':
+            return price * (discount_value / 100)
+        elif self.discount_type == 'fixed':
+            return min(discount_value, price)
+        elif self.discount_type == 'special_price':
+            return price - discount_value
+        elif self.discount_type == 'buy_one_get_one':
+            return price  # Для акции 1+1=1, скидка равна цене одного товара
+        return 0
+
+    def save(self, *args, **kwargs):
+        """Переопределяем save для автоматической генерации slug"""
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+
+        # Устанавливаем дефолтные даты, если они не указаны
+        if self.start_date is None:
+            self.start_date = timezone.now()
+
+        if self.end_date is None:
+            # По умолчанию акция действует 30 дней
+            from datetime import timedelta
+            if self.start_date:
+                self.end_date = self.start_date + timedelta(days=30)
+            else:
+                self.end_date = timezone.now() + timedelta(days=30)
+
+        super().save(*args, **kwargs)
+
+    @property
+    def time_left_display(self):
+        """Отображение оставшегося времени (для админки)"""
+        if not self.is_current or self.end_date is None:
+            return "Не активна"
+
+        delta = self.end_date - timezone.now()
+        days = delta.days
+        hours = delta.seconds // 3600
+        minutes = (delta.seconds % 3600) // 60
+
+        if days > 0:
+            return f"{days} д. {hours} ч."
+        elif hours > 0:
+            return f"{hours} ч. {minutes} м."
+        else:
+            return f"{minutes} м."
+
+
+class ProductPromotion(models.Model):
+    """Связь товара с акцией (многие ко многим с дополнительными полями)"""
+    product = models.ForeignKey(
+        'Product',  # Используем строку для избежания циклического импорта
+        on_delete=models.CASCADE,
+        related_name='product_promotions',
+        verbose_name="Товар"
+    )
+    promotion = models.ForeignKey(
+        Promotion,
+        on_delete=models.CASCADE,
+        related_name='product_promotions',
+        verbose_name="Акция"
+    )
+    priority = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        verbose_name="Приоритет",
+        help_text="От 1 до 10 (чем выше, тем выше приоритет)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата добавления")
+
+    class Meta:
+        verbose_name = "Товар по акции"
+        verbose_name_plural = "Товары по акциям"
+        unique_together = ['product', 'promotion']
+        ordering = ['-priority', '-created_at']
+
+    def __str__(self):
+        return f"{self.product.name} - {self.promotion.name}"
+
+    @property
+    def is_active(self):
+        """Проверка, активна ли связь товара с акцией"""
+        return self.promotion.is_current
 
 
 # Сигналы для автоматического создания профиля при создании пользователя

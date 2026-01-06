@@ -398,6 +398,7 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     raw_id_fields = ['product']
 
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'first_name', 'last_name', 'email', 'phone',
@@ -411,6 +412,74 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ['session_key', 'product', 'quantity', 'created']
     list_filter = ['created']
     search_fields = ['session_key', 'product__name']
+
+
+from django.contrib import admin
+from django.utils.html import format_html
+from django.utils import timezone
+from .models import Category, Product, Promotion, ProductPromotion, ProductImage
+from .forms import PromotionForm
+
+class ProductPromotionInline(admin.TabularInline):
+    """Inline для акций товара"""
+    model = ProductPromotion
+    extra = 1
+    autocomplete_fields = ['product']
+
+
+@admin.register(Promotion)
+class PromotionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'discount_type', 'discount_value', 'start_date', 'end_date', 'is_active']
+    list_filter = ['is_active', 'discount_type']
+    search_fields = ['name', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+
+    # УБРАТЬ time_left_display отсюда ↓
+    readonly_fields = ['created_at', 'updated_at']  # Было: ['created_at', 'updated_at', 'time_left_display']
+
+    inlines = [ProductPromotionInline]
+
+    fieldsets = [
+        ('Основная информация', {
+            'fields': ['name', 'slug', 'description', 'short_description', 'is_active']
+        }),
+        ('Параметры скидки', {
+            'fields': ['discount_type', 'discount_value']
+        }),
+        ('Сроки действия', {
+            'fields': ['start_date', 'end_date']  # Было: ['start_date', 'end_date', 'time_left_display']
+        }),
+        ('Изображения', {
+            'fields': ['image', 'banner_image']
+        }),
+    ]
+
+    # Метод можно оставить, но убрать из полей
+    def time_left_display(self, obj):
+        """Отображение оставшегося времени"""
+        if obj.start_date and obj.end_date:
+            return f"{obj.name} - расчет времени"
+        return "Даты не установлены"
+
+    time_left_display.short_description = 'Осталось времени'
+
+
+@admin.register(ProductPromotion)
+class ProductPromotionAdmin(admin.ModelAdmin):
+    list_display = ['product', 'promotion', 'priority', 'discount_info']
+    list_filter = ['promotion']
+    search_fields = ['product__name', 'promotion__name']
+    autocomplete_fields = ['product', 'promotion']
+
+    def discount_info(self, obj):
+        if obj.promotion and obj.product:
+            discount = obj.promotion.calculate_discount(float(obj.product.price))
+            return f"-{discount:.2f} ₽ ({obj.product.discount_percentage}%)"
+        return "—"
+
+    discount_info.short_description = 'Скидка'
+
+
 
 # from django.contrib import admin
 # from .models import Category, Product, ProductImage, Order, OrderItem, Cart

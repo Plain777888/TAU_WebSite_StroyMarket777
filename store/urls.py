@@ -24,6 +24,11 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('otzov/', views.otzov, name='otzov'),
 
+    path('promotions/', views.promotions_list, name='promotions'),
+    path('promotions/<int:promotion_id>/', views.promotion_detail, name='promotion_detail'),
+    path('promotions/products/', views.products_on_promotion, name='products_on_promotion'),
+    path('api/promotions/', views.api_promotions, name='api_promotions'),
+
     path('test-image/', views.test_image_url, name='test_image'),
 
     # Аутентификация

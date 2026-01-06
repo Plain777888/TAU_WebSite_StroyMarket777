@@ -506,4 +506,88 @@ def get_reviews(request):
         }
     ]
 
-    return JsonResponse({'reviews': reviews_data,'categories':categories})
+    return JsonResponse({'reviews': reviews_data})
+
+
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Product, Promotion, ProductPromotion
+
+
+def promotions_list(request):
+    """Список всех акций"""
+    now = timezone.now()
+    current_promotions = Promotion.objects.filter(
+        start_date__lte=now,
+        end_date__gte=now,
+        is_active=True
+    ).order_by('-start_date')
+
+    upcoming_promotions = Promotion.objects.filter(
+        start_date__gt=now,
+        is_active=True
+    ).order_by('start_date')
+
+    context = {
+        'current_promotions': current_promotions,
+        'upcoming_promotions': upcoming_promotions,
+        'title': 'Акции'
+    }
+    return render(request, 'store/promotions.html', context)
+
+
+def promotion_detail(request, promotion_id):
+    """Детальная страница акции"""
+    promotion = get_object_or_404(Promotion, id=promotion_id)
+    products = promotion.products.all().select_related('product')
+
+    context = {
+        'promotion': promotion,
+        'products': products,
+        'title': promotion.name
+    }
+    return render(request, 'store/promotion_detail.html', context)
+
+
+def products_on_promotion(request):
+    """Товары по акции"""
+    now = timezone.now()
+    promotions = Promotion.objects.filter(
+        start_date__lte=now,
+        end_date__gte=now,
+        is_active=True
+    )
+
+    # Получаем все товары, участвующие в акциях
+    product_promotions = ProductPromotion.objects.filter(
+        promotion__in=promotions
+    ).select_related('product', 'promotion').order_by('-priority')
+
+    # Группируем товары по акциям
+    grouped_products = {}
+    for pp in product_promotions:
+        if pp.promotion.name not in grouped_products:
+            grouped_products[pp.promotion.name] = {
+                'promotion': pp.promotion,
+                'products': []
+            }
+        grouped_products[pp.promotion.name]['products'].append(pp.product)
+
+    context = {
+        'grouped_products': grouped_products,
+        'title': 'Товары по акции'
+    }
+    return render(request, 'store/products_on_promotion.html', context)
+
+
+def api_promotions(request):
+    """API для получения списка акций"""
+    now = timezone.now()
+    promotions = Promotion.objects.filter(
+        start_date__lte=now,
+        end_date__gte=now,
+        is_active=True
+    ).values('id', 'name', 'description', 'discount_type', 'discount_value', 'end_date')
+
+    return JsonResponse(list(promotions), safe=False)

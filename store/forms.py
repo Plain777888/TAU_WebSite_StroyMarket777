@@ -125,6 +125,95 @@ class UserProfileForm(forms.ModelForm):
             'avatar': 'Аватар',
         }
 
+
+from django import forms
+from django.utils import timezone
+from .models import Promotion, Product, ProductPromotion
+from datetime import datetime
+
+
+class PromotionForm(forms.ModelForm):
+    """Форма для акций с валидацией дат"""
+
+    class Meta:
+        model = Promotion
+        fields = '__all__'
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'
+            }),
+            'end_date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'
+            }),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'short_description': forms.TextInput(attrs={'class': 'form-control'}),
+            'discount_type': forms.Select(attrs={'class': 'form-control'}),
+            'discount_value': forms.NumberInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+
+        # Валидация дат
+        if start_date and end_date:
+            if start_date >= end_date:
+                self.add_error('end_date', 'Дата окончания должна быть позже даты начала')
+
+            # Можно раскомментировать, если нужно запрещать прошедшие даты
+            # if start_date < timezone.now():
+            #     self.add_error('start_date', 'Дата начала не может быть в прошлом')
+
+        # Валидация значения скидки
+        discount_type = cleaned_data.get('discount_type')
+        discount_value = cleaned_data.get('discount_value')
+
+        if discount_type == 'percentage' and discount_value:
+            if discount_value > 100 or discount_value < 0:
+                self.add_error('discount_value', 'Процент скидки должен быть от 0 до 100')
+
+        return cleaned_data
+
+
+class ProductPromotionForm(forms.ModelForm):
+    """Форма для связывания товара с акцией"""
+
+    class Meta:
+        model = ProductPromotion
+        fields = ['product', 'promotion', 'priority']
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-control'}),
+            'promotion': forms.Select(attrs={'class': 'form-control'}),
+            'priority': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'max': 10
+            }),
+        }
+
+
+class ProductForm(forms.ModelForm):
+    """Форма для товара"""
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'old_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
 #
 # class OrderForm(forms.ModelForm):
 #     class Meta:
