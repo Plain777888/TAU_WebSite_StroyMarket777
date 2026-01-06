@@ -802,7 +802,15 @@
                             <h6 class="card-title">{{ related.name|truncatechars:40 }}</h6>
                                 </a>
                             <div class="mt-auto">
-                                <p class="h6 text-primary">{{ related.price }} ₽</p>
+                                {% if related.has_promotion %}
+        <div class="old-price">{{ related.price }} ₽</div>
+        <div class="h6 text-primary">{{ related.promotion_price }} ₽<span class="text-muted">/ {{ related.get_unit_display }}</span></div>
+        <div class="savings">Экономия {{ related.discount_amount }} ₽</div>
+        {% else %}
+        <div class="h6 text-primary">{{ related.price }} ₽<span class="text-muted">/ {{ related.get_unit_display }}</span></div>
+
+        {% endif %}
+
                                 <a href="{{ related.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
                             </div>
                         </div>
