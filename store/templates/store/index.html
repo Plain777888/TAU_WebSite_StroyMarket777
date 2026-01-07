@@ -551,15 +551,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- Рекламные баннеры -->
+<link rel="preload" as="image" href="images/banners/special-offer.jpg" importance="high">
 <section class="banner-container" id="promoBanners">
     <div class="banner-slider">
-        <!-- Баннер 1 -->
+        <!-- Баннер 1 - используйте ваши собственные, оптимизированные изображения -->
         <div class="banner-slide">
             <a href="/special-offer.html" class="banner-link">
-                <img src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/novog_baner1.png" alt="Специальное предложение">
+                <!-- Добавьте loading="lazy" и уменьшите размер -->
+                <img
+                    src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/banerskidking.avif"
+                    alt="Специальное предложение"
+                    loading="lazy"
+                    width="1200"
+                    height="300"
+                >
                 <div class="banner-overlay">
                     <h3>Специальное предложение!</h3>
-                    <p>Скидки до 50% на инструменты в честь нового года!</p>
+                    <p>Скидки до 50% на инструменты этой недели</p>
                 </div>
             </a>
         </div>
@@ -567,10 +575,16 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Баннер 2 -->
         <div class="banner-slide">
             <a href="/new-arrivals.html" class="banner-link">
-                <img src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/banerzaloguspexa.png" alt="Новые поступления">
+                <img
+                    src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/banerzaloguspexa.avif"
+                    alt="Новые поступления"
+                    loading="lazy"
+                    width="1200"
+                    height="300"
+                >
                 <div class="banner-overlay">
-                    <h3>на рынке с 2006 года!</h3>
-                    <p>Успеваем за трендами, следим за качеством</p>
+                    <h3>Новые поступления</h3>
+                    <p>Современные строительные материалы уже в продаже</p>
                 </div>
             </a>
         </div>
@@ -578,25 +592,38 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Баннер 3 -->
         <div class="banner-slide">
             <a href="/seasonal-sale.html" class="banner-link">
-                <img src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/baner1000.png" alt="Сезонная распродажа">
+                <img
+                    src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/baner1000.avif"
+                    alt="Сезонная распродажа"
+                    loading="lazy"
+                    width="1200"
+                    height="300"
+                >
                 <div class="banner-overlay">
-                    <h3>Новые поступления</h3>
-                    <p>Новые строительные товары уже совсем скоро поступят в продажу.</p>
+                    <h3>Сезонная распродажа</h3>
+                    <p>Все для ремонта со скидкой 30%</p>
                 </div>
             </a>
         </div>
 
         <!-- Баннер 4 -->
-<!--        <div class="banner-slide">-->
-<!--            <a href="/professional-tools.html" class="banner-link">-->
-<!--                <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1200&q=80" alt="Профессиональные инструменты">-->
-<!--                <div class="banner-overlay">-->
-<!--                    <h3>Профессиональные инструменты</h3>-->
-<!--                    <p>Для мастеров своего дела - специальные условия</p>-->
-<!--                </div>-->
-<!--            </a>-->
-<!--        </div>-->
-<!--    </div>-->
+        <div class="banner-slide">
+            <a href="/professional-tools.html" class="banner-link">
+                <img
+                    src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/banerslogan.avif"
+                    alt="Профессиональные инструменты"
+                    loading="lazy"
+                    width="1200"
+                    height="300"
+                >
+                <div class="banner-overlay">
+                    <h3>Профессиональные инструменты</h3>
+                    <p>Для мастеров своего дела - специальные условия</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
     </div>
     <!-- Стрелки навигации -->
     <button class="banner-nav banner-prev">‹</button>
