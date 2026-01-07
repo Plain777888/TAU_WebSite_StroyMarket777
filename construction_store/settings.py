@@ -14,6 +14,7 @@ LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/'
 
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -231,6 +232,52 @@ import sys
 #         else:
 #             print(f'⚠️ Ошибка при проверке/создании суперпользователя: {e}')
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': [
+            'redis://redis1:6379/1',
+            'redis://redis2:6379/1',  # Реплика для отказоустойчивости
+        ],
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 50,
+                'timeout': 20,
+            },
+            'MAX_CONNECTIONS': 1000,
+            'PICKLE_VERSION': -1,  # Используем последний протокол pickle
+            'SOCKET_CONNECT_TIMEOUT': 5,  # секунд
+            'SOCKET_TIMEOUT': 5,  # секунд
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+            'IGNORE_EXCEPTIONS': True,  # Продолжать работу при ошибках Redis
+        },
+        'KEY_PREFIX': 'prod',  # Префикс для всех ключей
+        'TIMEOUT': 60 * 60 * 24,  # 1 день по умолчанию
+        'VERSION': 1,
+    }
+}
+
+# Кеширование сессий в Redis
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Кеширование для разных частей сайта
+CACHE_TTL = {
+    'SHORT': 60 * 5,      # 5 минут
+    'MEDIUM': 60 * 15,    # 15 минут
+    'LONG': 60 * 60,      # 1 час
+    'DAY': 60 * 60 * 24,  # 1 день
+}
+
+# Исключаем админку из кеширования
+CACHE_MIDDLEWARE_EXCLUDED_PATHS = [
+    r'^/admin/',
+    r'^/api/auth/',
+    r'^/dashboard/',
+]
 # === АВТОМАТИЧЕСКАЯ НАСТРОЙКА ПРИ ЗАПУСКЕ ===
 import os
 import sys
