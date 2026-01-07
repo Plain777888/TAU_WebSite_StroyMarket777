@@ -202,6 +202,412 @@
     }
 });
 </script>
+<style>
+/* Стили для баннеров */
+.banner-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.banner-slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    height: 300px;
+}
+
+.banner-slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.banner-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.banner-overlay h3 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.banner-overlay p {
+    margin: 0;
+    font-size: 16px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.banner-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+    z-index: 10;
+}
+
+.banner-nav:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+.banner-prev {
+    left: 15px;
+}
+
+.banner-next {
+    right: 15px;
+}
+
+.banner-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.banner-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.banner-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .banner-slider {
+        height: 250px;
+    }
+
+    .banner-overlay h3 {
+        font-size: 20px;
+    }
+
+    .banner-overlay p {
+        font-size: 14px;
+    }
+}
+
+.banner-nav.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.banner-dot.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* Убедитесь, что кнопки изначально активны */
+.banner-nav {
+    pointer-events: auto;
+}
+
+.banner-dot {
+    pointer-events: auto;
+}
+@media (max-width: 480px) {
+    .banner-slider {
+        height: 200px;
+    }
+
+    .banner-nav {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+        pointer-events: auto;
+    }
+}
+
+</style>
+<script>
+    // Код для баннеров
+document.addEventListener('DOMContentLoaded', function() {
+    const bannerSlider = document.querySelector('.banner-slider');
+    const bannerSlides = document.querySelectorAll('.banner-slide');
+    const prevButton = document.querySelector('.banner-prev');
+    const nextButton = document.querySelector('.banner-next');
+    const dotsContainer = document.querySelector('.banner-dots');
+
+    let currentSlide = 0;
+    let isAnimating = false; // Флаг для предотвращения множественных кликов
+    let slideInterval;
+    const slideIntervalTime = 5000; // 5 секунд
+    const animationDuration = 500; // 0.5 секунд
+
+    // Создаем точки навигации
+    bannerSlides.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.classList.add('banner-dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => {
+            if (!isAnimating) {
+                goToSlide(index);
+            }
+        });
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.banner-dot');
+
+    // Функции для отключения/включения кнопок
+    function disableButtons() {
+        prevButton.classList.add('disabled');
+        nextButton.classList.add('disabled');
+        dots.forEach(dot => dot.classList.add('disabled'));
+    }
+
+    function enableButtons() {
+        prevButton.classList.remove('disabled');
+        nextButton.classList.remove('disabled');
+        dots.forEach(dot => dot.classList.remove('disabled'));
+    }
+
+    // Функция для перехода к конкретному слайду
+    function goToSlide(n) {
+        if (isAnimating || n === currentSlide) return;
+
+        isAnimating = true;
+        disableButtons(); // Отключаем кнопки во время анимации
+
+        currentSlide = n;
+        updateSlider();
+        resetInterval();
+
+        // Включаем кнопки после анимации
+        setTimeout(() => {
+            isAnimating = false;
+            enableButtons();
+        }, animationDuration);
+    }
+
+    // Функция обновления слайдера
+    function updateSlider() {
+        bannerSlider.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+        // Обновляем активную точку
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    // Следующий слайд
+    function nextSlide() {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        disableButtons(); // Отключаем кнопки во время анимации
+
+        currentSlide = (currentSlide + 1) % bannerSlides.length;
+        updateSlider();
+        resetInterval();
+
+        setTimeout(() => {
+            isAnimating = false;
+            enableButtons(); // Включаем кнопки после анимации
+        }, animationDuration);
+    }
+
+    // Предыдущий слайд
+    function prevSlide() {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        disableButtons(); // Отключаем кнопки во время анимации
+
+        currentSlide = (currentSlide - 1 + bannerSlides.length) % bannerSlides.length;
+        updateSlider();
+        resetInterval();
+
+        setTimeout(() => {
+            isAnimating = false;
+            enableButtons(); // Включаем кнопки после анимации
+        }, animationDuration);
+    }
+
+    // Сброс интервала
+    function resetInterval() {
+        clearInterval(slideInterval);
+        startInterval();
+    }
+
+    // Запуск автоматического перелистывания
+    function startInterval() {
+        slideInterval = setInterval(() => {
+            if (!isAnimating) {
+                nextSlide();
+            }
+        }, slideIntervalTime);
+    }
+
+    // Обработчики событий с защитой от двойных кликов
+    prevButton.addEventListener('click', () => {
+        if (!isAnimating) {
+            prevSlide();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (!isAnimating) {
+            nextSlide();
+        }
+    });
+
+    // Останавливаем автоперелистывание при наведении мыши
+    const bannerContainer = document.getElementById('promoBanners');
+    bannerContainer.addEventListener('mouseenter', () => {
+        clearInterval(slideInterval);
+    });
+
+    bannerContainer.addEventListener('mouseleave', () => {
+        if (!isAnimating) {
+            startInterval();
+        }
+    });
+
+    // Запускаем автоперелистывание
+    startInterval();
+
+    // Добавляем поддержку свайпа на мобильных устройствах с защитой
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let lastSwipeTime = 0;
+    const swipeCooldown = 600; // Минимальное время между свайпами
+
+    bannerContainer.addEventListener('touchstart', e => {
+        if (isAnimating) return;
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    bannerContainer.addEventListener('touchend', e => {
+        if (isAnimating) return;
+
+        const currentTime = Date.now();
+        if (currentTime - lastSwipeTime < swipeCooldown) return;
+
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+        lastSwipeTime = currentTime;
+    }, { passive: true });
+
+    function handleSwipe() {
+        const swipeThreshold = 50;
+
+        if (touchStartX - touchEndX > swipeThreshold) {
+            // Свайп влево = следующий слайд
+            nextSlide();
+        } else if (touchEndX - touchStartX > swipeThreshold) {
+            // Свайп вправо = предыдущий слайд
+            prevSlide();
+        }
+    }
+});
+</script>
+<!-- Рекламные баннеры -->
+<section class="banner-container" id="promoBanners">
+    <div class="banner-slider">
+        <!-- Баннер 1 -->
+        <div class="banner-slide">
+            <a href="/special-offer.html" class="banner-link">
+                <img src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/novog_baner1.png" alt="Специальное предложение">
+                <div class="banner-overlay">
+                    <h3>Специальное предложение!</h3>
+                    <p>Скидки до 50% на инструменты в честь нового года!</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Баннер 2 -->
+        <div class="banner-slide">
+            <a href="/new-arrivals.html" class="banner-link">
+                <img src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/banerzaloguspexa.png" alt="Новые поступления">
+                <div class="banner-overlay">
+                    <h3>на рынке с 2006 года!</h3>
+                    <p>Успеваем за трендами, следим за качеством</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Баннер 3 -->
+        <div class="banner-slide">
+            <a href="/seasonal-sale.html" class="banner-link">
+                <img src="https://jfzkqlynhzlzbuqihbxj.supabase.co/storage/v1/object/public/products/products/baner1000.png" alt="Сезонная распродажа">
+                <div class="banner-overlay">
+                    <h3>Новые поступления</h3>
+                    <p>Новые строительные товары уже совсем скоро поступят в продажу.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Баннер 4 -->
+<!--        <div class="banner-slide">-->
+<!--            <a href="/professional-tools.html" class="banner-link">-->
+<!--                <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1200&q=80" alt="Профессиональные инструменты">-->
+<!--                <div class="banner-overlay">-->
+<!--                    <h3>Профессиональные инструменты</h3>-->
+<!--                    <p>Для мастеров своего дела - специальные условия</p>-->
+<!--                </div>-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
+    </div>
+    <!-- Стрелки навигации -->
+    <button class="banner-nav banner-prev">‹</button>
+    <button class="banner-nav banner-next">›</button>
+
+    <!-- Точки навигации -->
+    <div class="banner-dots">
+        <!-- Точки будут добавлены через JavaScript -->
+    </div>
+
+</section>
 <!-- Популярные товары -->
 <section class="mb-5">
     <h2 class="mb-4">Популярные товары</h2>
