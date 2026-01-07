@@ -1,0 +1,363 @@
+/* === NON-CRITICAL STYLES - ВЫНОСИМ В ОТДЕЛЬНЫЙ ФАЙЛ === */
+
+/* 1. Стили для акций и промо-бейджей */
+.promotion-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.promotion-badge .discount-percent {
+    font-size: 1.2em;
+    display: block;
+    text-align: center;
+}
+
+.promotion-badge .promotion-label {
+    font-size: 0.8em;
+    display: block;
+    text-align: center;
+    opacity: 0.9;
+}
+
+.price-container {
+    margin: 10px 0;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #95a5a6;
+    font-size: 0.9em;
+}
+
+.new-price {
+    color: #e74c3c;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.savings {
+    color: #27ae60;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.promotion-timer {
+    position: absolute;
+    background: linear-gradient(45deg, rgba(0, 255, 42,.3), rgba(0, 255, 42,.3),rgba(0, 255, 42,.3));
+    color: black;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-top: -35px;
+    margin-left: 41px;
+    font-size: 12px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.promotion-timer .timer {
+    font-weight: bold;
+    color: red;
+}
+
+/* 2. Стили для карточек товаров */
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.product-image-link {
+    display: block;
+    overflow: hidden;
+    position: relative;
+}
+
+.product-img {
+    transition: transform 0.3s ease;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-img:hover {
+    transform: scale(1.03);
+}
+
+.product-title-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-title-link:hover h3,
+.product-title-link:hover h5 {
+    color: #0d6efd;
+}
+
+.no-image-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #6c757d;
+    font-size: 3rem;
+}
+
+/* 3. Дополнительные стили баннеров */
+.banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.banner-overlay h3 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.banner-overlay p {
+    margin: 0;
+    font-size: 16px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.banner-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+    z-index: 10;
+}
+
+.banner-nav:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+.banner-prev {
+    left: 15px;
+}
+
+.banner-next {
+    right: 15px;
+}
+
+.banner-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.banner-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.banner-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+.banner-nav.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.banner-dot.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* 4. Стили для адаптивности */
+@media (max-width: 768px) {
+    .banner-slider {
+        height: 250px;
+    }
+
+    .banner-overlay h3 {
+        font-size: 20px;
+    }
+
+    .banner-overlay p {
+        font-size: 14px;
+    }
+
+    .promotion-timer {
+        margin-left: 10px;
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-slider {
+        height: 200px;
+    }
+
+    .banner-nav {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .product-img {
+        height: 180px;
+    }
+
+    .no-image-placeholder {
+        height: 180px;
+    }
+}
+
+/* 5. Анимации и эффекты */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.product-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Задержка для staggered анимации */
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* 6. Стили для страницы со списком акций (если есть) */
+.promotions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.promotion-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.promotion-card:hover {
+    transform: translateY(-5px);
+}
+
+.promotion-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.promotion-content {
+    padding: 20px;
+}
+
+.promotion-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.promotion-description {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+.promotion-dates {
+    font-size: 0.9em;
+    color: #95a5a6;
+    margin-bottom: 10px;
+}
+
+.promotion-type {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+}
+
+.promotion-type.percentage {
+    background-color: #e74c3c;
+}
+
+.promotion-type.fixed {
+    background-color: #2ecc71;
+}
+
+/* 7. Микро-оптимизации */
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.btn-outline-primary {
+    border-width: 1px;
+}
+
+/* 8. Улучшения для Core Web Vitals */
+img {
+    content-visibility: auto;
+}
+
+.card-img-top {
+    content-visibility: auto;
+    contain-intrinsic-size: 300px 200px;
+}
